@@ -1,9 +1,9 @@
 Szachy to darmowa aplikacja open source do gry, analizy i systematycznej nauki szachów.
 
 ANALIZUJ SWOJE PARTIE
-• Importuj zakończone partie Chess.com i Lichess lub wczytaj PGN.
+• Importuj zakończone partie Chess.com i Lichess, także przez systemowe Udostępnij PGN w Androidzie.
 • Korzystaj z lokalnego Stockfish bez limitu analiz.
-• Oglądaj ważne momenty, poprawne warianty i wracaj do przeoczonych ruchów.
+• Porównuj ruch gracza z wariantem Stockfish i sprawdzaj głębokość analizy. Jeśli brak pewnego wyjaśnienia, zobaczysz to wprost.
 
 TRENUJ NA WŁASNYCH BŁĘDACH
 • Ćwicz pozycje ze swoich rzeczywistych partii.
@@ -19,5 +19,7 @@ WYZWANIA I ROZWÓJ
 • Bez reklam, płatnych abonamentów i obowiązkowego konta.
 • Analiza i zapis postępu odbywają się na urządzeniu. Import i część danych wymagają internetu.
 • Działa także offline z wcześniej zapisanymi partiami i materiałami.
+
+Szachy mają odświeżoną, kontrastową szatę graficzną i nową ikonę.
 
 Szachy rozwija DC4I sp. z o.o., z poszanowaniem licencji GPL i autorów projektu Open Chess. Aplikacja nie jest powiązana z Chess.com ani Lichess. Wyzwania i odznaki są lokalne, nie stanowią internetowych rankingów.
