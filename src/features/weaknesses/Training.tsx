@@ -8,6 +8,7 @@ import { db, kvGet, kvSet } from '../../db/db'
 import { fmtDecimal } from '../../i18n/format'
 import { useSettings } from '../../settings'
 import { coachPlan, coachPuzzleProgress } from './coach'
+import SkillInsights from './SkillInsights'
 import { PHASES, TREND_GAMES, buildPlan, buildProfile, dayKey, dayProgress, planIsCurrent, weekStart, type PlanDay, type Profile, type WeeklyPlan } from './profile'
 
 /** Below this many reviewed games the profile is mostly noise. */
@@ -16,7 +17,7 @@ const PLAN_KEY = 'weeklyPlan'
 
 export default function Training() {
   const { t } = useTranslation()
-  const games = useLiveQuery(() => db.games.filter((g) => !g.deleted && !!g.review && !!g.userColor).toArray(), [])
+  const games = useLiveQuery(() => db.games.filter((g) => !g.deleted && g.result !== '*' && !!g.review && !!g.userColor).toArray(), [])
   const profile = useMemo(() => (games ? buildProfile(games) : undefined), [games])
   const ready = !!profile && profile.games >= MIN_GAMES
 
@@ -33,6 +34,7 @@ export default function Training() {
     <div className="mx-auto max-w-4xl pb-8">
       <PageHeader title={t('training.title')} />
       <div className="grid gap-4 px-4 lg:px-6">
+        <SkillInsights />
         <DailyCoach />
         {!profile ? (
           <Panel className="space-y-3 p-4">
