@@ -93,12 +93,12 @@ export function Layout() {
             end={i.to === '/'}
             onClick={() => setMoreOpen(false)}
             className={({ isActive }) =>
-              `flex h-16 flex-col items-center justify-center gap-0.5 text-[11px] font-semibold ${isActive ? 'text-fg' : 'text-fg-3'}`
+              `nav-item flex h-16 flex-col items-center justify-center gap-0.5 text-[11px] font-semibold ${isActive ? 'text-fg' : 'text-fg-3'}`
             }
           >
-            {({ isActive }) => (
+            {() => (
               <>
-                <span className={`grid h-7 place-items-center transition-[opacity,transform] duration-150 ${isActive ? '' : 'opacity-75 grayscale-[35%]'}`}>
+                <span className="nav-icon">
                   <AppIcon name={i.icon} size={26} />
                 </span>
                 {i.label}
@@ -109,11 +109,12 @@ export function Layout() {
         <button
           ref={moreButton}
           onClick={() => setMoreOpen((v) => !v)}
-          className={`flex h-16 flex-col items-center justify-center gap-0.5 text-[11px] font-semibold ${moreOpen || inMore ? 'text-fg' : 'text-fg-3'}`}
+          data-active={moreOpen || inMore}
+          className={`nav-item flex h-16 flex-col items-center justify-center gap-0.5 text-[11px] font-semibold ${moreOpen || inMore ? 'text-fg' : 'text-fg-3'}`}
           aria-expanded={moreOpen}
           aria-controls="more-menu"
         >
-          <DotsThreeOutline size={26} weight={moreOpen || inMore ? 'fill' : 'regular'} />
+          <span className="nav-icon"><DotsThreeOutline size={24} weight={moreOpen || inMore ? 'fill' : 'regular'} /></span>
           {t('nav.more')}
         </button>
       </nav>

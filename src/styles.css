@@ -7,25 +7,25 @@
 /* Tokens. Dark is the default; light follows the same hierarchy. */
 :root {
   color-scheme: dark;
-  --bg: #302e2b;
-  --bg-rail: #262421;
-  --panel: #262522;
-  --panel-2: #21201d;
-  --raise: #3c3a37;
-  --raise-2: #4b4847;
-  --line: #3f3d3a;
-  --text: #f1f0ef;
-  --text-2: #c3c2c1;
-  --text-3: #989795;
-  --accent: #81b64c;
-  --accent-hi: #95c75e;
-  --accent-lo: #45753c;
-  --on-accent: #ffffff;
+  --bg: #0c1220;
+  --bg-rail: #101827;
+  --panel: #161f32;
+  --panel-2: #101827;
+  --raise: #25324a;
+  --raise-2: #34435e;
+  --line: #34435a;
+  --text: #f7f4eb;
+  --text-2: #ccd5df;
+  --text-3: #aab8c9;
+  --accent: #5ee2cc;
+  --accent-hi: #83f0df;
+  --accent-lo: #238778;
+  --on-accent: #0c1220;
   --danger: #e35d4b;
   /* backgrounds behind white text that must stay readable (toasts): >= 4.5:1 */
   --success-strong: #4e8228;
   --danger-strong: #c8432f;
-  --warn: #f2b43c;
+  --warn: #f7c66c;
 
   /* Move-quality vocabulary */
   --q-brilliant: #9b5cf6;
@@ -41,8 +41,8 @@
   --q-forced: #8a96a8;
 
   /* Board (overridden per theme via data-board) */
-  --sq-light: #ebecd0;
-  --sq-dark: #739552;
+  --sq-light: #e8e1cf;
+  --sq-dark: #728b98;
   --sq-last: rgba(255, 255, 51, 0.42);
   --sq-check: rgba(235, 60, 50, 0.85);
 
@@ -58,30 +58,20 @@
   --radius-lg: 10px;
 }
 
-:root[data-theme='light'] {
+ :root[data-theme='light'] {
   color-scheme: light;
-  --bg: #f1f0ee;
-  --bg-rail: #ffffff;
-  --panel: #ffffff;
-  --panel-2: #f7f6f4;
-  --raise: #e8e6e3;
-  --raise-2: #dcdad6;
-  --line: #e0ddd9;
-  --text: #22201d;
-  --text-2: #4c4a47;
-  --text-3: #6f6c68;
+  --bg: #edf2f3; --bg-rail: #f8fbfa; --panel: #ffffff; --panel-2: #e9f0f0;
+  --raise: #d9e7e5; --raise-2: #c9dcd9; --line: #b8cbc9;
+  --text: #142534; --text-2: #364e5b; --text-3: #48616d;
+  --accent: #00685e; --accent-hi: #00564e; --accent-lo: #004a43; --on-accent: #ffffff;
 }
-
-/* Opt-in: chess.com's green with white text is 2.4:1; these tones reach WCAG AA */
 :root[data-contrast='high'] {
-  --accent: #4e8228;
-  --accent-hi: #5a8f2e;
-  --accent-lo: #33561a;
-  --danger: #c8432f;
-  --text-3: #b0afad;
+  --text: #ffffff; --text-2: #f0f6f6; --text-3: #d6e4e6;
+  --line: #8397a7; --accent: #83f0df; --accent-hi: #adfff1; --on-accent: #081820;
 }
 :root[data-theme='light'][data-contrast='high'] {
-  --text-3: #55524e;
+  --text: #091b25; --text-2: #182d39; --text-3: #263f4a;
+  --line: #607b80; --accent: #00534b; --accent-hi: #003e38; --on-accent: #ffffff;
 }
 
 :root[data-board='brown'] { --sq-light: #f0d9b5; --sq-dark: #b58863; }
@@ -205,8 +195,8 @@ h1[tabindex='-1']:focus {
   color: var(--text-2);
 }
 .btn-icon {
-  min-height: 2.5rem;
-  width: 2.5rem;
+  min-height: 2.75rem;
+  width: 2.75rem;
   padding: 0;
 }
 @media (hover: hover) and (pointer: fine) {
@@ -601,3 +591,17 @@ cg-board square.right {
 :root:lang(ja) {
   --font-sans: 'Geist Variable', ui-sans-serif, system-ui, 'Hiragino Sans', 'Noto Sans JP', 'Yu Gothic UI', 'Meiryo', sans-serif;
 }
+
+/* Task-first home and navigation */
+.home-hero { display: flex; align-items: center; gap: 1rem; min-height: 142px; padding: 1.35rem; border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line)); border-radius: 18px; background: linear-gradient(125deg, var(--panel), var(--raise)); box-shadow: 0 12px 32px rgb(0 0 0 / .12); }
+.home-hero-icon { display: grid; place-items: center; width: 52px; height: 52px; flex: none; border-radius: 14px; background: var(--accent); color: var(--on-accent); }
+.home-hero-label { color: var(--accent); font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.nav-item[aria-current='page'], .nav-item[data-active='true'] { color: var(--accent); }
+.nav-item[aria-current='page'] .nav-icon, .nav-item[data-active='true'] .nav-icon { background: color-mix(in srgb, var(--accent) 17%, transparent); }
+.nav-icon { display: grid; place-items: center; width: 48px; height: 30px; border-radius: 999px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+
+/* Accent fills use their paired foreground, including existing utility combinations. */
+.bg-accent.text-white { color: var(--on-accent); }
+
+.field:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: 2px; }

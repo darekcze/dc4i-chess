@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { DownloadSimple, CaretRight, Target } from '@phosphor-icons/react'
 import { AppIcon, type AppIconName } from '../../ui/AppIcon'
-import { PieceIcon } from '../../board/QualityIcon'
 import { Chess } from 'chess.js'
 import { Board } from '../../board/Board'
 import { Panel, Skeleton, SkeletonRows } from '../../ui/kit'
@@ -19,7 +18,8 @@ import { challengeLabels } from '../challenges/labels'
 import { playerName } from '../play/playerName'
 
 export function Home() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const polish = i18n.resolvedLanguage?.startsWith('pl')
   const challenge = challengeLabels(useSettings((s) => s.lang))
   const games = useLiveQuery(() => recentGames(5), [])
   const rating = useLiveQuery(() => getPuzzleRating(), [])
@@ -62,20 +62,39 @@ export function Home() {
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="grid content-start gap-3">
-          <Link to="/play" className="group">
-            <Panel className="flex items-center gap-4 p-5 transition-colors duration-150 group-hover:bg-raise">
-              <span className="grid h-16 w-16 shrink-0 place-items-center rounded-xl bg-accent shadow-[0_3px_0_0_var(--accent-lo)]">
-                <PieceIcon piece="n" color="w" size={50} />
+          <Link to="/import" className="home-hero group" data-testid="home-hero">
+            <span className="home-hero-icon"><DownloadSimple size={28} weight="bold" /></span>
+            <span className="min-w-0 flex-1">
+              <span className="home-hero-label">{polish ? 'Twój kolejny krok' : 'Your next move'}</span>
+              <span className="mt-1 block text-[21px] font-extrabold leading-tight">{polish ? 'Przeanalizuj zakończoną partię' : 'Analyze a finished game'}</span>
+              <span className="mt-1 block text-sm text-fg-2">{polish ? 'Importuj PGN i odkryj, czego możesz się nauczyć.' : 'Import a PGN and find what you can learn.'}</span>
+            </span>
+            <CaretRight size={22} className="shrink-0 text-fg-2" />
+          </Link>
+
+          <Link to="/challenges" className="group">
+            <Panel className="flex items-center gap-4 p-4 transition-colors duration-150 group-hover:bg-raise">
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-raise"><AppIcon name="daily" size={30} /></span>
+              <div className="min-w-0 flex-1"><div className="text-[17px] font-extrabold">{challenge.title}</div><div className="text-[14px] text-fg-2">{challenge.homeSub}</div></div>
+              <CaretRight size={22} className="text-fg-3" />
+            </Panel>
+          </Link>
+
+          <Link to="/training" className="group">
+            <Panel className="flex items-center gap-4 p-4 transition-colors duration-150 group-hover:bg-raise">
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-raise text-accent">
+                <Target size={30} weight="duotone" />
               </span>
               <div className="min-w-0 flex-1">
-                <div className="text-[22px] font-extrabold">{t('home.playBot')}</div>
-                <div className="text-fg-2">{t('home.playBotSub')}</div>
+                <div className="text-[17px] font-extrabold">{t('home.training')}</div>
+                <div className="text-[14px] text-fg-2">{t('home.trainingSub')}</div>
               </div>
-              <CaretRight size={24} className="text-fg-3" />
+              <CaretRight size={22} className="text-fg-3" />
             </Panel>
           </Link>
 
           <div className="grid grid-cols-2 gap-3">
+            <Tile to="/play" icon="play" title={t('home.playBot')} />
             <Tile to="/puzzles/rated" icon="puzzles" title={t('home.puzzles')} sub={rating ? `${t('home.puzzleRating')}: ${rating.rating}` : undefined} />
             <Tile to="/puzzles" icon="rush" title={t('home.rush')} />
             <Tile to="/lessons" icon="learn" title={t('home.lessons')} />
@@ -103,27 +122,6 @@ export function Home() {
               </Panel>
             </Link>
           )}
-
-          <Link to="/challenges" className="group">
-            <Panel className="flex items-center gap-4 p-4 transition-colors duration-150 group-hover:bg-raise">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-raise"><AppIcon name="daily" size={30} /></span>
-              <div className="min-w-0 flex-1"><div className="text-[17px] font-extrabold">{challenge.title}</div><div className="text-[14px] text-fg-2">{challenge.homeSub}</div></div>
-              <CaretRight size={22} className="text-fg-3" />
-            </Panel>
-          </Link>
-
-          <Link to="/training" className="group">
-            <Panel className="flex items-center gap-4 p-4 transition-colors duration-150 group-hover:bg-raise">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-raise text-accent">
-                <Target size={30} weight="duotone" />
-              </span>
-              <div className="min-w-0 flex-1">
-                <div className="text-[17px] font-extrabold">{t('home.training')}</div>
-                <div className="text-[14px] text-fg-2">{t('home.trainingSub')}</div>
-              </div>
-              <CaretRight size={22} className="text-fg-3" />
-            </Panel>
-          </Link>
 
           <Panel className="overflow-hidden">
             <div className="flex items-center justify-between border-b border-line px-4 py-3">
