@@ -13,6 +13,7 @@ import { startSync } from './sync/sync'
 import { preloadSounds } from './chess/sounds'
 import { Home } from './features/home/Home'
 
+const Challenges = lazy(() => import('./features/challenges/Challenges'))
 const PlayHub = lazy(() => import('./features/play/PlayHub'))
 const PlayBot = lazy(() => import('./features/play/PlayBot'))
 const PlayLocal = lazy(() => import('./features/play/PlayLocal'))
@@ -88,6 +89,7 @@ export function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />
+            <Route path="challenges" element={<Challenges />} />
             <Route path="play" element={<PlayHub />} />
             <Route path="play/bot/:botId" element={<PlayBot />} />
             <Route path="play/local" element={<PlayLocal />} />
