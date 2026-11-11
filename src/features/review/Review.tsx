@@ -36,6 +36,10 @@ import { playLine } from './line'
 
 type Mode = 'summary' | 'moves'
 
+export function reviewForDisplay(review: StoredReview | undefined): StoredReview | undefined {
+  return review
+}
+
 export default function Review() {
   const { id = '' } = useParams()
   const { t } = useTranslation()
@@ -104,9 +108,7 @@ export default function Review() {
 
   const parsed = useMemo(() => (game ? parseGame(game.pgn) : null), [game])
   const sans = useMemo(() => parsed?.moves.map((m) => m.san) ?? [], [parsed])
-  // The stored classifier has no depth qualification for brilliant/great labels.
-  const review = useMemo(() => game?.review && ({ ...game.review, moves: game.review.moves.map((m) =>
-    m.quality === 'brilliant' || m.quality === 'great' ? { ...m, quality: 'good' as const } : m) }), [game?.review])
+  const review = reviewForDisplay(game?.review)
   const qualities = useMemo(() => review?.moves.map((m) => m.quality), [review])
   const total = parsed?.moves.length ?? 0
   // the turning points: great finds and errors, the user's own when we know their colour
@@ -678,9 +680,9 @@ function QualityRow({ q, w, b }: { q: Quality; w: number; b: number }) {
   )
 }
 
-const REPORT_COPY = {
-  pl: { title: 'Raport ruchu', played: 'Zagrano', best: 'Najlepszy ruch silnika', line: 'Przykładowy wariant', depth: 'Głębokość wariantu', target: 'Docelowa głębokość analizy', eval: 'Ocena przed → po (z perspektywy białych)', unavailable: 'Brak zweryfikowanego wariantu. Uruchom analizę ponownie, aby uzyskać dowody.', noTactic: 'Nie potwierdzono motywu taktycznego w tym ruchu.', unknown: 'brak danych' },
-  en: { title: 'Move report', played: 'Played', best: 'Engine best move', line: 'Example variation', depth: 'Variation depth', target: 'Target review depth', eval: 'Evaluation before → after (White’s perspective)', unavailable: 'No verified variation available. Reanalyze to obtain evidence.', noTactic: 'No tactical motif confirmed for this move.', unknown: 'unavailable' },
+export const REPORT_COPY = {
+  pl: { title: 'Raport ruchu', played: 'Zagrano', best: 'Zapisany najlepszy ruch silnika', line: 'Przykładowy wariant', depth: 'Głębokość wariantu', target: 'Docelowa głębokość analizy', eval: 'Zapisane oceny silnika przed → po (z perspektywy białych)', caveat: 'Pochodzenia zapisanych wyników nie można niezależnie potwierdzić. Płytka analiza może być mniej wiarygodna.', unavailable: 'Brak poprawnego zapisanego wariantu. Uruchom analizę ponownie.', noTactic: 'Nie wykryto motywu taktycznego w dostępnych danych.', unknown: 'brak danych' },
+  en: { title: 'Move report', played: 'Played', best: 'Recorded engine best move', line: 'Example variation', depth: 'Variation depth', target: 'Target review depth', eval: 'Recorded engine evaluations before → after (White’s perspective)', caveat: 'The provenance of recorded results cannot be independently confirmed. Shallow analysis may be less reliable.', unavailable: 'No valid recorded variation available. Reanalyze to obtain one.', noTactic: 'No tactical motif detected in the available data.', unknown: 'unavailable' },
 }
 
 function Coach({ move, evidence, retry, variation, onBest, onRetry }: {
@@ -705,6 +707,7 @@ function Coach({ move, evidence, retry, variation, onBest, onRetry }: {
           <p><strong>{copy.line}:</strong> <span className="font-mono">{evidence.line.join(' ')}</span></p>
           <p><strong>{copy.depth}:</strong> {evidence.depth} · {copy.target}: {evidence.reviewDepth}</p>
           <p><strong>{copy.eval}:</strong> {evidence.before ? formatScore(evidence.before) : copy.unknown} → {evidence.after ? formatScore(evidence.after) : copy.unknown}</p>
+          <p>{copy.caveat}</p>
           <p>{evidence.explanation ? describeWhy(evidence.explanation, t, i18n.language) : copy.noTactic}</p>
         </div> : <p className="mt-2 text-[14px] leading-relaxed">{copy.unavailable}</p>}
       </>}

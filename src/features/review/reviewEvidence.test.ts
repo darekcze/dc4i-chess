@@ -38,4 +38,27 @@ describe('reviewEvidence', () => {
     f.review.moves[0].color = 'w'; expect(reviewEvidence(f.review, f.fens, 1)).toBeNull()
   })
   it('omits unverified after evaluation when no position score was stored', () => { const f = fixture(); f.review.lines![1] = []; expect(reviewEvidence(f.review, f.fens, 1)?.after).toBeNull() })
+  it('rejects a non-primary line before the move', () => { const f = fixture(); f.review.lines![0][0].multipv = 2; expect(reviewEvidence(f.review, f.fens, 1)).toBeNull() })
+  it('omits after scores for non-primary, malformed, or missing lines in nonterminal positions', () => {
+    for (const change of [
+      (f: ReturnType<typeof fixture>) => { f.review.lines![1][0].multipv = 2 },
+      (f: ReturnType<typeof fixture>) => { f.review.lines![1][0].pv = ['d7d5', 'd7d6'] },
+      (f: ReturnType<typeof fixture>) => { f.review.lines![1][0].depth = 0 },
+      (f: ReturnType<typeof fixture>) => { f.review.lines![1] = [] },
+    ]) { const f = fixture(); change(f); expect(reviewEvidence(f.review, f.fens, 1)?.after).toBeNull() }
+  })
+  it('uses a matching terminal score without an after PV', () => {
+    const f = fixture(); const c = new Chess('7k/5Q2/6K1/8/8/8/8/8 w - - 0 1')
+    const before = c.fen(); c.move('Qg7#'); f.fens = [before, c.fen()]
+    f.review.moves[0] = { ...f.review.moves[0], san: 'Qg7#', uci: 'f7g7', bestSan: 'Qg7#', bestUci: 'f7g7', scoreAfter: { mate: 0, cp: 1 } }
+    f.review.lines = [[{ multipv: 1, depth: 16, score: { mate: 1 }, pv: ['f7g7'] }], []]
+    expect(reviewEvidence(f.review, f.fens, 1)?.after).toEqual({ mate: 0, cp: 1 })
+  })
+  it('does not use a stale preceding score to explain a later move', () => {
+    const f = fixture(); const c = new Chess(f.fens[1]); c.move('d5'); f.fens.push(c.fen())
+    f.review.moves.push({ ...f.review.moves[0], ply: 2, color: 'b', san: 'd5', uci: 'd7d5', bestSan: 'd5', bestUci: 'd7d5', scoreAfter: { mate: 2 } })
+    f.review.lines![2] = [{ multipv: 1, depth: 16, score: { mate: 2 }, pv: ['c2c4'] }]
+    f.review.moves[0].scoreAfter = { cp: 100 }
+    expect(reviewEvidence(f.review, f.fens, 2)).toMatchObject({ before: null, explanation: null })
+  })
 })

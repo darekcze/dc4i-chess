@@ -43,7 +43,7 @@ export function reviewEvidence(review: StoredReview, fens: string[], ply: number
   if (!Number.isSafeInteger(review.depth) || review.depth < 1) return null
   const move = review.moves[ply - 1]
   const pv = review.lines?.[ply - 1]?.[0]
-  if (!move || !pv || !Number.isSafeInteger(pv.depth) || pv.depth < 1 || !move.bestSan || !move.bestUci) return null
+  if (!move || !pv || pv.multipv !== 1 || !Number.isSafeInteger(pv.depth) || pv.depth < 1 || !move.bestSan || !move.bestUci) return null
   try {
     const chess = new Chess(fens[ply - 1])
     if (chess.turn() !== move.color || !/^[a-h][1-8][a-h][1-8][qrbn]?$/.test(move.uci)) return null
@@ -51,12 +51,12 @@ export function reviewEvidence(review: StoredReview, fens: string[], ply: number
     if (!actual || actual.san !== move.san || chess.fen() !== fens[ply]) return null
     const line = sanLine(fens[ply - 1], pv.pv)
     if (!line || pv.pv[0] !== move.bestUci || line[0] !== move.bestSan) return null
-    const before = validScore(pv.score) ? pv.score : null
+    const before = validScore(pv.score) && (ply === 1 || sameScore(pv.score, review.moves[ply - 2]?.scoreAfter)) ? pv.score : null
     const afterLine = review.lines?.[ply]?.[0]
-    const afterCandidate = validScore(afterLine?.score) && sanLine(fens[ply], afterLine.pv) ? afterLine.score : terminalScore(fens[ply])
+    const reply = afterLine && afterLine.multipv === 1 && Number.isSafeInteger(afterLine.depth) && afterLine.depth > 0 && sanLine(fens[ply], afterLine.pv) ? afterLine : undefined
+    const afterCandidate = reply && validScore(reply.score) ? reply.score : terminalScore(fens[ply])
     const after = sameScore(afterCandidate, move.scoreAfter) ? afterCandidate : null
-    // explainPly can fall back to the next move's bestUci; only pass it a verified reply.
-    const reply = afterLine && sanLine(fens[ply], afterLine.pv) ? afterLine : undefined
+    // explainPly can fall back to the next move's bestUci; only pass a replayable primary reply.
     const safeMoves = review.moves.map((m, i) => i === ply ? { ...m, bestUci: null } : m)
     const safeLines = [...(review.lines ?? [])]
     safeLines[ply] = reply ? [reply] : []
