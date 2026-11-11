@@ -13,6 +13,14 @@
 - Zadania taktyczne, trener debiutów z powtórkami, lekcje, boty i lokalne wyzwania.
 - Tryb offline dla wcześniej pobranych danych, bez konta, reklam i opłat.
 
+## Autorskie ulepszenia DC4I
+
+- **Trener pamięci błędów:** harmonogram powtórek faktycznie rozwiązanych pozycji, w tym zadania nowe, zaległe i utrwalone.
+- **Wyzwania lokalne:** cele dzienne, odznaki i serie aktywności wyliczane z zapisanej historii bez fikcyjnego rankingu online.
+- **Raport umiejętności:** wiarygodne porównanie dwóch kolejnych okresów 30 dni z próbą, błędami na 100 ruchów, kolorami i otwarciami.
+- **Język polski:** pełne tłumaczenie interfejsu i materiałów; zostało przekazane także autorowi Open Chess.
+- [Badanie konkurencji i plan rozwoju (PL)](docs/pl/2026-11-11-analiza-konkurencji-google-play.md).
+
 Szachy nie służą do podpowiadania ruchów podczas trwających partii online. Nie jesteśmy powiązani z Chess.com ani Lichess.
 
 ## Instalacja Android

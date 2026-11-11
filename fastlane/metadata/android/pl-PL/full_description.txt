@@ -1,13 +1,23 @@
-Szachy to darmowa, otwarta aplikacja do gry i treningu szachowego.
+Szachy to darmowa aplikacja open source do gry, analizy i systematycznej nauki szachów.
 
-• Analizuj zakończone partie Chess.com za pomocą lokalnego silnika Stockfish.
-• Ucz się na własnych błędach i wracaj do przeoczonych ruchów.
-• Wykonuj codzienny trening dopasowany do wykrytych słabości.
-• Rozwiązuj zadania szachowe i poznawaj motywy taktyczne.
-• Trenuj debiuty oraz powtarzaj ich warianty.
-• Graj z komputerem, ucz się na lekcjach i podejmuj wyzwania.
-• Korzystaj bez reklam, abonamentu i obowiązkowego konta.
+ANALIZUJ SWOJE PARTIE
+• Importuj zakończone partie Chess.com i Lichess lub wczytaj PGN.
+• Korzystaj z lokalnego Stockfish bez limitu analiz.
+• Oglądaj ważne momenty, poprawne warianty i wracaj do przeoczonych ruchów.
 
-Podstawowa analiza działa na telefonie. Import partii i wybrane dane
-z zewnętrznych baz wymagają internetu. Aplikacja jest niezależnym forkiem
-Open Chess na GPL-3.0 i nie jest powiązana z Chess.com ani Lichess.
+TRENUJ NA WŁASNYCH BŁĘDACH
+• Ćwicz pozycje ze swoich rzeczywistych partii.
+• Powtarzaj zadania zgodnie z harmonogramem 1, 3, 7, 14 i 30 dni.
+• Wybierz zaległe zadania lub powtórz je wcześniej.
+
+WYZWANIA I ROZWÓJ
+• Wykonuj codzienne misje i zdobywaj odznaki za faktyczne osiągnięcia.
+• Obserwuj wyniki ostatnich 30 dni, z podziałem na debiuty i kolory figur.
+• Trenuj debiuty, taktykę, końcówki i graj z botami.
+
+100% DARMOWE
+• Bez reklam, płatnych abonamentów i obowiązkowego konta.
+• Analiza i zapis postępu odbywają się na urządzeniu. Import i część danych wymagają internetu.
+• Działa także offline z wcześniej zapisanymi partiami i materiałami.
+
+Szachy rozwija DC4I sp. z o.o., z poszanowaniem licencji GPL i autorów projektu Open Chess. Aplikacja nie jest powiązana z Chess.com ani Lichess. Wyzwania i odznaki są lokalne, nie stanowią internetowych rankingów.
