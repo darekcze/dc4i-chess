@@ -14,10 +14,13 @@ import { recentGames } from '../../db/games'
 import { dailyPuzzle, getPuzzleRating, type Puzzle } from '../puzzles/puzzlesData'
 import { playUci } from '../../chess/util'
 import { GameRowItem } from '../profile/GameRowItem'
+import { useSettings } from '../../settings'
+import { challengeLabels } from '../challenges/labels'
 import { playerName } from '../play/playerName'
 
 export function Home() {
   const { t } = useTranslation()
+  const challenge = challengeLabels(useSettings((s) => s.lang))
   const games = useLiveQuery(() => recentGames(5), [])
   const rating = useLiveQuery(() => getPuzzleRating(), [])
   // cards fall due as time passes, not only when the table changes
@@ -100,6 +103,14 @@ export function Home() {
               </Panel>
             </Link>
           )}
+
+          <Link to="/challenges" className="group">
+            <Panel className="flex items-center gap-4 p-4 transition-colors duration-150 group-hover:bg-raise">
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-raise"><AppIcon name="daily" size={30} /></span>
+              <div className="min-w-0 flex-1"><div className="text-[17px] font-extrabold">{challenge.title}</div><div className="text-[14px] text-fg-2">{challenge.homeSub}</div></div>
+              <CaretRight size={22} className="text-fg-3" />
+            </Panel>
+          </Link>
 
           <Link to="/training" className="group">
             <Panel className="flex items-center gap-4 p-4 transition-colors duration-150 group-hover:bg-raise">
