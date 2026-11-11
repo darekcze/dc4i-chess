@@ -20,8 +20,8 @@ export interface SaveGameInput {
 export async function saveGame(input: SaveGameInput): Promise<GameRow> {
   const c = input.chess
   const date = new Date()
-  c.setHeader('Event', input.source === 'bot' ? 'Open Chess vs bot' : 'Open Chess')
-  c.setHeader('Site', 'Open Chess')
+  c.setHeader('Event', input.source === 'bot' ? 'Szachy vs bot' : 'Szachy')
+  c.setHeader('Site', 'Szachy')
   c.setHeader('Date', `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`)
   c.setHeader('White', input.white)
   c.setHeader('Black', input.black)

@@ -18,7 +18,7 @@ export function annotatedPgn(game: GameRow, label: (q: Quality) => string): stri
   const hist = src.history({ verbose: true })
   const out = new Chess(hist[0]?.before)
   for (const [k, v] of Object.entries(src.getHeaders())) if (v) out.setHeader(k, v)
-  out.setHeader('Annotator', 'Open Chess')
+  out.setHeader('Annotator', 'Szachy')
   hist.forEach((m, i) => {
     out.move(m.san)
     const r = review.moves[i]

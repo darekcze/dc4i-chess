@@ -61,7 +61,7 @@ export function Layout() {
       <nav className="hidden w-[168px] shrink-0 flex-col bg-rail py-3 lg:flex" aria-label={t('nav.main')}>
         <NavLink to="/" className="mb-3 flex items-center gap-2 px-3 py-2">
           <Logo size={30} />
-          <span className="whitespace-nowrap text-[17px] font-extrabold tracking-tight">Open Chess</span>
+          <span className="whitespace-nowrap text-[17px] font-extrabold tracking-tight">Szachy</span>
         </NavLink>
         {primary.map((i) => (
           <RailLink key={i.to} item={i} />

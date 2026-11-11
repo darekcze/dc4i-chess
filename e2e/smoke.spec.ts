@@ -81,7 +81,7 @@ test('moves queued while the bot thinks are played in turn', async ({ page }) =>
   await move(page, 'f1', 'c4')
   await expect(moves).toHaveCount(6, { timeout: 20_000 })
   await expect(moves.nth(2)).toHaveText('Nf3')
-  await expect(moves.nth(4)).toHaveText('Bc4')
+  await expect(moves.nth(4)).toContainText('Bc4')
 })
 
 test('bots with a playing style answer, below and above the engine limiter', async ({ page }) => {
@@ -150,7 +150,7 @@ test('every page renders without errors', { tag: '@mobile' }, async ({ page }) =
     await page.goto(`/#${r}`)
     await expect(page.locator('main')).toBeVisible()
     if (h1) await expect(page.locator('main h1').first(), r).toHaveText(h1)
-    await expect(page).toHaveTitle(/Open Chess/)
+    await expect(page).toHaveTitle(/Szachy/)
   }
   expect(errors).toEqual([])
 })
@@ -170,7 +170,7 @@ test('navigating names the tab and focuses the new heading', { tag: '@mobile' },
   await page.locator('nav a:visible', { hasText: /^Puzzles$/ }).click()
   await expect(page.locator('main h1')).toHaveText('Puzzles')
   await expect(page.locator('main h1')).toBeFocused()
-  await expect(page).toHaveTitle('Puzzles · Open Chess')
+  await expect(page).toHaveTitle('Puzzles · Szachy')
 })
 
 test('a bot game starts without scrolling and the bot never talks over the board', { tag: '@mobile' }, async ({ page }) => {

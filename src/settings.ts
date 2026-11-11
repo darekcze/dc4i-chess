@@ -2,17 +2,17 @@ import { useSyncExternalStore } from 'react'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export const PIECE_SETS = ['staunty', 'fresca', 'tatiana', 'maestro', 'california', 'cardinal', 'gioco', 'chessnut', 'cburnett'] as const
+export const PIECE_SETS = ['chessnut', 'cburnett'] as const
 export type PieceSet = (typeof PIECE_SETS)[number]
 
 export const SOUND_SETS = ['wood', 'sfx', 'piano', 'nes', 'futuristic'] as const
 export type SoundSet = (typeof SOUND_SETS)[number]
 
-export const LANGS = ['es', 'en', 'fr', 'it', 'zh', 'ja'] as const
+export const LANGS = ['es', 'en', 'fr', 'it', 'zh', 'ja', 'pl'] as const
 export type Lang = (typeof LANGS)[number]
 
 /** Native name of each language, for the picker. */
-export const LANG_NAMES: Record<Lang, string> = { es: 'Español', en: 'English', fr: 'Français', it: 'Italiano', zh: '中文', ja: '日本語' }
+export const LANG_NAMES: Record<Lang, string> = { es: 'Español', en: 'English', fr: 'Français', it: 'Italiano', zh: '中文', ja: '日本語', pl: 'Polski' }
 
 /** The first browser language the app speaks; English for everyone else. */
 export function detectLang(prefs: readonly string[] = typeof navigator === 'undefined' ? [] : (navigator.languages ?? [navigator.language])): Lang {
@@ -64,7 +64,7 @@ export const useSettings = create<Settings>()(
       lang: detectLang(),
       theme: 'system',
       board: 'green',
-      pieces: 'staunty',
+      pieces: 'chessnut',
       sound: true,
       soundSet: 'wood',
       coords: true,

@@ -86,7 +86,7 @@ export function VideoExport({
       accuracy: (v) => t('review.video.accuracy', { value: fmtDecimal(v) }),
       moveNumber: (ply) => moveNumberLabel(ply, parsed.startFen, '…'),
       result: winner ? t('review.video.wins', { name: winner }) : game.result === '*' ? '' : t('review.video.draw'),
-      footer: 'Open Chess',
+      footer: 'Szachy',
       site: WEB_ADDRESS,
       vs: t('games.vs'),
     }
