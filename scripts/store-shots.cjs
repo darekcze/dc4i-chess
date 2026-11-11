@@ -3,6 +3,7 @@ const fs=require('fs');
 const path=require('path');
 (async ()=>{
  const root='fastlane/metadata/android/pl-PL/images';
+ const previewUrl=process.env.SZACHY_PREVIEW_URL || 'http://127.0.0.1:4173';
  const shotDir=path.join(root,'phoneScreenshots');
  fs.mkdirSync(shotDir,{recursive:true});
  const browser=await chromium.launch({headless:true});
@@ -14,10 +15,12 @@ const path=require('path');
   ['03-debiuty','/openings'],
   ['04-lekcje','/lessons'],
   ['05-analiza','/analysis'],
-  ['06-import','/import']
+  ['06-import','/import'],
+  ['07-wyzwania','/challenges'],
+  ['08-trening','/training']
  ];
  for(const [name,route] of urls){
-  await page.goto('http://127.0.0.1:4173/#'+route,{waitUntil:'networkidle'});
+  await page.goto(previewUrl+'/#'+route,{waitUntil:'networkidle'});
   await page.locator('main').waitFor({state:'visible',timeout:15000});
   await page.waitForTimeout(300);
   const lang=await page.evaluate(()=>document.documentElement.lang);

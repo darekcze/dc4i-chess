@@ -130,6 +130,8 @@ const PAGES: [string, RegExp | null][] = [
   ['/play/local', /Two players/],
   ['/puzzles', /^Puzzles$/],
   ['/training', /^Your weak spots$/],
+  ['/challenges', /^Challenges$/],
+  ['/puzzles/mistakes', /^Your mistakes$/],
   ['/clones', /^Clones$/],
   ['/league', /^League$/],
   ['/puzzles/rated', /Rated puzzles/],
