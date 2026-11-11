@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.9.0](https://github.com/darekcze/dc4i-chess/compare/v0.8.0...v0.9.0) (2026-11-11)
+
+
+### Features
+
+* **analytics:** add verified 30-day training insights ([c3618fa](https://github.com/darekcze/dc4i-chess/commit/c3618fa841cc7bd66ea43b284b9955dcf3e6a951))
+* **analytics:** add verified 30-day training insights ([cde7f21](https://github.com/darekcze/dc4i-chess/commit/cde7f218508bfc17bfe6a7f0777be66b64effdea))
+* **android:** accept completed PGN via system sharing ([2ed5dc7](https://github.com/darekcze/dc4i-chess/commit/2ed5dc78d07fd886459b589e7d383d9f12a2ee30))
+* **android:** build branded Szachy app and daily coaching ([a7a16a3](https://github.com/darekcze/dc4i-chess/commit/a7a16a3c086e3f2f0d8f76588f0bc139becee858))
+* **challenges:** add offline missions and earned badges ([3335b56](https://github.com/darekcze/dc4i-chess/commit/3335b5604e2963dd40785848e4b363d5478bf94c))
+* **challenges:** add offline missions and earned badges ([9a9eea3](https://github.com/darekcze/dc4i-chess/commit/9a9eea3fd3e581a1a95aa1ad7b49b272213a983f))
+* **design:** refresh Szachy identity, icon and coaching UI ([2575630](https://github.com/darekcze/dc4i-chess/commit/2575630e052fdb9005d72c76e4393337d044316f))
+* **i18n:** add complete Polish localization ([f98634e](https://github.com/darekcze/dc4i-chess/commit/f98634eeb28e42cfa0d1aac265d02aa789778e31))
+* **review:** add evidence-first move explanations ([fe7b3fa](https://github.com/darekcze/dc4i-chess/commit/fe7b3fadb19149da2e2ed76b285591ef36ae39b2))
+* Szachy 0.8.1 Beta 3 native PGN and refreshed UI ([fa4ecf0](https://github.com/darekcze/dc4i-chess/commit/fa4ecf09199c61a7b13aa4f6906b4a970afdef89))
+* Szachy Android MVP with Polish community localization ([8000902](https://github.com/darekcze/dc4i-chess/commit/800090203fc90cc70231e45f13da61638b630b28))
+* **training:** spaced repetition for personal mistakes ([983ab0c](https://github.com/darekcze/dc4i-chess/commit/983ab0c6d8931d85fba33b3d7e74f159edb87f3f))
+* **training:** spaced repetition for personal mistakes ([f162e43](https://github.com/darekcze/dc4i-chess/commit/f162e43ab43b795d32bd423d427180c8f18a3e93))
+
+
+### Bug fixes
+
+* **android:** make PGN sharing resilient across lifecycle and queued input ([4954f91](https://github.com/darekcze/dc4i-chess/commit/4954f9161acff69efeda7b398320f0510446c1b0))
+* **ci:** install Android SDK 36 without deprecated setup action ([29a842c](https://github.com/darekcze/dc4i-chess/commit/29a842c1dc38726021b8525df8658fad3d8bcc64))
+* **ci:** reliable Android SDK setup for artifact workflows ([9b55874](https://github.com/darekcze/dc4i-chess/commit/9b5587443a9a9afa2b265ec624f7dbdb3c17faaa))
+* **ci:** remove unused Playwright import in screenshot script ([a776b67](https://github.com/darekcze/dc4i-chess/commit/a776b6753bbf32413045a0a56f2932de8436fac8))
+* **review:** preserve move classifications and validate primary PV ([accf93c](https://github.com/darekcze/dc4i-chess/commit/accf93cab93d8b1f84df2c1afe12caa7fc205278))
+
 ## [0.8.0](https://github.com/jupiutrera/open-chess/compare/v0.7.0...v0.8.0) (2026-11-03)
 
 
