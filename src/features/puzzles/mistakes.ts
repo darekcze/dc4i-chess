@@ -5,6 +5,7 @@ import type { Puzzle } from './puzzlesData'
 import { Chess } from 'chess.js'
 import { sharedEngine, type Score } from '../../engine/engine'
 import { playUci } from '../../chess/util'
+import { mistakeSchedule, type MemorySchedule } from './mistakeSchedule'
 
 export interface MistakePuzzle extends Puzzle {
   gameId: string
@@ -12,6 +13,7 @@ export interface MistakePuzzle extends Puzzle {
   san: string
   quality: Quality
   opponent: string
+  schedule?: MemorySchedule
 }
 
 const BAD: Quality[] = ['blunder', 'miss', 'mistake']
@@ -48,18 +50,27 @@ export function mistakesFromGame(game: GameRow): MistakePuzzle[] {
   return out
 }
 
-/** All of them, worst first, the ones not solved yet before the rest. */
+/** Prioritize due and new puzzles; keep unsolved and worst-first ordering within each group. */
 export async function mistakePuzzles(): Promise<MistakePuzzle[]> {
   const [games, attempts] = await Promise.all([
     db.games.filter((g) => !g.deleted && !!g.review && !!g.userColor).toArray(),
     db.puzzleAttempts.where('mode').equals('mistakes').toArray(),
   ])
+  const byPuzzle = new Map<string, typeof attempts>()
+  for (const a of attempts) {
+    const rows = byPuzzle.get(a.puzzleId) ?? []
+    rows.push(a)
+    byPuzzle.set(a.puzzleId, rows)
+  }
   const solved = new Set(attempts.filter((a) => a.solved && !a.deleted).map((a) => a.puzzleId))
+  const priority = { due: 0, new: 1, upcoming: 2, mastered: 2 } as const
+  const now = Date.now()
   const rank = (q: Quality) => BAD.indexOf(q)
   return games
     .sort((a, b) => b.date - a.date)
     .flatMap(mistakesFromGame)
-    .sort((a, b) => Number(solved.has(a.id)) - Number(solved.has(b.id)) || rank(a.quality) - rank(b.quality))
+    .map((p) => ({ ...p, schedule: mistakeSchedule(byPuzzle.get(p.id) ?? [], now) }))
+    .sort((a, b) => priority[a.schedule.status] - priority[b.schedule.status] || Number(solved.has(a.id)) - Number(solved.has(b.id)) || rank(a.quality) - rank(b.quality))
 }
 
 /** How much worse than the engine's move another answer may be and still count. */
@@ -76,6 +87,8 @@ export function cpFor(score: Score, color: 'w' | 'b'): number {
 
 /** Whether an answer scored `alt` is as good as the best one scored `best` (both for the solver). */
 export function goodEnough(best: number, alt: number): boolean {
+  // A centipawn advantage cannot substitute for a forced mating line.
+  if (best >= 90_000 && alt < 90_000) return false
   return alt >= best - ALT_MARGIN || alt >= ALT_WINNING
 }
 
@@ -102,7 +115,6 @@ export async function isGoodAlternative(fen: string, uci: string, bestUci: strin
   const color = new Chess(fen).turn()
   const alt = await scoreAfter(fen, uci, color)
   if (alt === null) return false
-  if (alt >= ALT_WINNING) return true
   const best = await scoreAfter(fen, bestUci, color)
   return best !== null && goodEnough(best, alt)
 }

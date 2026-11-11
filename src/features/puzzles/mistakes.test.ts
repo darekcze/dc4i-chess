@@ -38,7 +38,11 @@ describe('alternative answers', () => {
   it('accepts moves close to the best or still clearly winning', () => {
     expect(goodEnough(80, 40)).toBe(true)
     expect(goodEnough(80, 20)).toBe(false)
-    expect(goodEnough(99_997, 450)).toBe(true)
+    expect(goodEnough(99_997, 450)).toBe(false)
+    expect(goodEnough(99_997, 99_995)).toBe(true)
+    expect(goodEnough(600, 450)).toBe(true)
+    expect(cpFor({ mate: 3 }, 'b')).toBeLessThan(0)
+    expect(cpFor({ mate: -3 }, 'b')).toBeGreaterThan(0)
     expect(goodEnough(600, 150)).toBe(false)
   })
 })

@@ -10,17 +10,30 @@ import { usePuzzle } from './usePuzzle'
 import { StatusBlock } from './PuzzleRated'
 import { isGoodAlternative, mistakePuzzles, type MistakePuzzle } from './mistakes'
 
+const words = {
+  en: { due: 'Due', new: 'New', mastered: 'Mastered', complete: 'All exercises due now are complete.', early: 'No exercises are due now. You can practise early.', all: 'Practice all', allMode: 'Practising all exercises, including those not due yet.', scheduled: 'Practice due and new', method: 'Correct attempts schedule reviews after 1, 3, 7, 14 and 30 days. A mistake or hint resets progress. Extra successes on the same day do not advance it.' },
+  pl: { due: 'Do powtórki', new: 'Nowe', mastered: 'Opanowane', complete: 'Wszystkie ćwiczenia na teraz są ukończone.', early: 'Nie ma teraz ćwiczeń do powtórki. Możesz ćwiczyć wcześniej.', all: 'Ćwicz wszystkie', allMode: 'Ćwiczysz wszystkie zadania, także te zaplanowane na później.', scheduled: 'Ćwicz zaległe i nowe', method: 'Poprawne próby planują powtórki po 1, 3, 7, 14 i 30 dniach. Błąd lub podpowiedź zeruje postęp. Kolejne sukcesy tego samego dnia go nie przyspieszają.' },
+} as const
+
 /** Replays the positions where the user went wrong in their reviewed games. */
 export default function PuzzleMistakes() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const text = i18n.resolvedLanguage?.toLowerCase().startsWith('pl') ? words.pl : words.en
   const nav = useNavigate()
   const [list, setList] = useState<MistakePuzzle[] | null>(null)
+  const [all, setAll] = useState<MistakePuzzle[] | null>(null)
+  const [practiceAll, setPracticeAll] = useState(false)
   const [i, setI] = useState(0)
   const [key, setKey] = useState(0)
   const recorded = useRef<string | null>(null)
 
   useEffect(() => {
-    void mistakePuzzles().then(setList)
+    void mistakePuzzles().then((items) => {
+      setAll(items)
+      const scheduled = items.filter((p) => p.schedule?.status === 'due' || p.schedule?.status === 'new')
+      setList(scheduled.length ? scheduled : items)
+      setPracticeAll(!scheduled.length)
+    })
   }, [])
 
   // a fresh object per attempt: usePuzzle restarts when the puzzle changes
@@ -32,11 +45,22 @@ export default function PuzzleMistakes() {
     onDone: (solved) => {
       if (!puzzle || recorded.current === puzzle.id + key) return
       recorded.current = puzzle.id + key
-      void recordAttempt(puzzle, solved, 'mistakes', false)
+      void recordAttempt(puzzle, solved, 'mistakes', false).then(() => mistakePuzzles()).then(setAll)
     },
   })
   const orientation = pz.solverColor === 'w' ? 'white' : 'black'
   const done = pz.status === 'solved' || pz.status === 'failed'
+  const counts = { due: 0, new: 0, mastered: 0 }
+  for (const item of all ?? []) {
+    const status = item.schedule?.status
+    if (status === 'due' || status === 'new' || status === 'mastered') counts[status]++
+  }
+  const start = (items: MistakePuzzle[], allMode: boolean) => {
+    setList(items)
+    setI(0)
+    setKey((k) => k + 1)
+    setPracticeAll(allMode)
+  }
 
   if (list && !list.length)
     return (
@@ -78,6 +102,20 @@ export default function PuzzleMistakes() {
               </span>
             )}
           </div>
+          {all && (
+            <div className="space-y-2 border-b border-line px-4 py-3 text-sm" aria-live="polite">
+              <p>{text.due}: {counts.due} · {text.new}: {counts.new} · {text.mastered}: {counts.mastered}</p>
+              <p className="text-fg-2">{text.method}</p>
+              {!counts.due && !counts.new && <p>{done && !practiceAll ? text.complete : text.early}</p>}
+              {practiceAll && <p>{text.allMode}</p>}
+              <div className="flex flex-wrap gap-2">
+                <button className="btn min-h-[44px]" onClick={() => start(all, true)}>{text.all}</button>
+                {practiceAll && (counts.due + counts.new > 0) && (
+                  <button className="btn min-h-[44px]" onClick={() => start(all.filter((p) => p.schedule?.status === 'due' || p.schedule?.status === 'new'), false)}>{text.scheduled}</button>
+                )}
+              </div>
+            </div>
+          )}
           <div className="flex min-h-[132px] items-center gap-3 p-4">
             <StatusBlock status={pz.status} color={pz.solverColor} />
           </div>
@@ -100,19 +138,19 @@ export default function PuzzleMistakes() {
                     {t('puzzles.next')} <ArrowRight size={20} weight="bold" />
                   </button>
                 )}
-                <button className="btn" onClick={() => setKey((k) => k + 1)}>
+                <button className="btn min-h-[44px]" onClick={() => setKey((k) => k + 1)}>
                   <ArrowCounterClockwise size={20} weight="bold" /> {t('puzzles.retry')}
                 </button>
-                <button className="btn" onClick={() => puzzle && nav(`/review/${puzzle.gameId}`)}>
+                <button className="btn min-h-[44px]" onClick={() => puzzle && nav(`/review/${puzzle.gameId}`)}>
                   <MagnifyingGlass size={20} weight="bold" /> {t('puzzles.seeGame')}
                 </button>
               </>
             ) : (
               <>
-                <button className="btn" onClick={pz.hint} disabled={pz.status !== 'playing'}>
+                <button className="btn min-h-[44px]" onClick={pz.hint} disabled={pz.status !== 'playing'}>
                   <Lightbulb size={20} weight="bold" /> {t('puzzles.hint')}
                 </button>
-                <button className="btn" onClick={pz.showSolution} disabled={pz.status === 'loading'}>
+                <button className="btn min-h-[44px]" onClick={pz.showSolution} disabled={pz.status === 'loading'}>
                   <Eye size={20} weight="bold" /> {t('puzzles.solution')}
                 </button>
               </>
