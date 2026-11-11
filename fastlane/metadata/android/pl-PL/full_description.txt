@@ -1,0 +1,13 @@
+Szachy to darmowa, otwarta aplikacja do gry i treningu szachowego.
+
+• Analizuj zakończone partie Chess.com za pomocą lokalnego silnika Stockfish.
+• Ucz się na własnych błędach i wracaj do przeoczonych ruchów.
+• Wykonuj codzienny trening dopasowany do wykrytych słabości.
+• Rozwiązuj zadania szachowe i poznawaj motywy taktyczne.
+• Trenuj debiuty oraz powtarzaj ich warianty.
+• Graj z komputerem, ucz się na lekcjach i podejmuj wyzwania.
+• Korzystaj bez reklam, abonamentu i obowiązkowego konta.
+
+Podstawowa analiza działa na telefonie. Import partii i wybrane dane
+z zewnętrznych baz wymagają internetu. Aplikacja jest niezależnym forkiem
+Open Chess na GPL-3.0 i nie jest powiązana z Chess.com ani Lichess.

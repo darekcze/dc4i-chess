@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { PageHeader, Panel, Segmented, Toggle } from '../../ui/kit'
 import { useSettings, PIECE_SETS, SOUND_SETS, LANGS, LANG_NAMES, type BoardTheme } from '../../settings'
 import { play, preloadSounds } from '../../chess/sounds'
-import { REPO_URL } from '../../ui/links'
+import { REPO_URL, UPSTREAM_REPO_URL } from '../../ui/links'
 
 const KNIGHTS = import.meta.glob('../../assets/pieces/*/wN.svg', { eager: true, query: '?url', import: 'default' }) as Record<string, string>
 const KINGS = import.meta.glob('../../assets/pieces/*/bK.svg', { eager: true, query: '?url', import: 'default' }) as Record<string, string>
@@ -173,9 +173,10 @@ export default function SettingsPage() {
 
         <section className="grid gap-2 px-1 text-[13px] text-fg-2" aria-label="About and credits">
           <h2 className="font-extrabold">{String(s.lang) === 'pl' ? 'O aplikacji i autorzy' : 'About and credits'}</h2>
-          <p>{String(s.lang) === 'pl' ? 'Szachy to niezależna aplikacja oparta na Open Chess autorstwa jupiutrera i współtwórców. Licencja GPL-3.0 lub nowsza.' : 'Szachy is an independent app based on Open Chess by jupiutrera and contributors. Licensed under GPL-3.0 or later.'} <a href={REPO_URL} target="_blank" rel="noreferrer" className="text-accent underline">Open Chess - GitHub</a> | <a href="./licenses/GPL-3.0.txt" target="_blank" rel="noreferrer" className="text-accent underline">GPL-3.0</a></p>
+          <p>{String(s.lang) === 'pl' ? 'Szachy to niezależna aplikacja oparta na Open Chess autorstwa jupiutrera i współtwórców. Licencja GPL-3.0 lub nowsza.' : 'Szachy is an independent app based on Open Chess by jupiutrera and contributors. Licensed under GPL-3.0 or later.'} <a href={UPSTREAM_REPO_URL} target="_blank" rel="noreferrer" className="text-accent underline">Open Chess - GitHub</a> | <a href="./licenses/GPL-3.0.txt" target="_blank" rel="noreferrer" className="text-accent underline">GPL-3.0</a></p>
           <p>{String(s.lang) === 'pl' ? 'Figury: Chessnut, Alexis Luengas (Apache-2.0); cburnett, Colin M.L. Burnett (GPL-2.0 lub nowsza). Pozostałe licencje znajdują się w kodzie źródłowym.' : 'Pieces: Chessnut by Alexis Luengas (Apache-2.0); cburnett by Colin M.L. Burnett (GPL-2.0 or later). Other asset licences are included in the source.'}</p>
           <p>{String(s.lang) === 'pl' ? 'Aplikacja nie jest powiązana z Chess.com ani Lichess.' : 'This app is not affiliated with Chess.com or Lichess.'}</p>
+          <p><a href={REPO_URL} target="_blank" rel="noreferrer" className="text-accent underline">{String(s.lang) === 'pl' ? 'Kod źródłowy Szachy (GPL)' : 'Szachy source code (GPL)'}</a> | <a href="./privacy.html" target="_blank" rel="noreferrer" className="text-accent underline">{String(s.lang) === 'pl' ? 'Polityka prywatności' : 'Privacy policy'}</a></p>
         </section>
       </div>
     </div>
