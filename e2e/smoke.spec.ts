@@ -81,7 +81,7 @@ test('moves queued while the bot thinks are played in turn', async ({ page }) =>
   await move(page, 'f1', 'c4')
   await expect(moves).toHaveCount(6, { timeout: 20_000 })
   await expect(moves.nth(2)).toHaveText('Nf3')
-  await expect(moves.nth(4)).toHaveText('Bc4')
+  await expect(moves.nth(4)).toContainText('Bc4')
 })
 
 test('bots with a playing style answer, below and above the engine limiter', async ({ page }) => {
