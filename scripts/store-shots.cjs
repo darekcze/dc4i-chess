@@ -1,4 +1,4 @@
-const {chromium,devices}=require('@playwright/test');
+const {chromium}=require('@playwright/test');
 const fs=require('fs');
 const path=require('path');
 (async ()=>{
