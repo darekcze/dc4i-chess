@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { MAX_SHARED_PGN_BYTES, validateSharedPgn } from './sharedPgn'
 
 const game = '[Event "Friendly"]\n[Result "1-0"]\n\n1. e4 e5 2. Nf3 Nc6 1-0'
@@ -47,4 +47,55 @@ describe('pending share queue', () => {
       Object.defineProperty(globalThis, 'sessionStorage', { value: old, configurable: true })
     }
   })
+})
+
+describe('terminal results', () => {
+  it('rejects results contradictory to mate and accepts Chess.com clock comments', () => {
+    expect(validateSharedPgn('1. f3 e5 2. g4 Qh4# 1-0')).toBe('invalid')
+    expect(validateSharedPgn('1. f3 e5 2. g4 Qh4# 0-1')).toBeNull()
+    expect(validateSharedPgn('[Event "Live Chess"]\n[Result "1-0"]\n[Termination "White won on time"]\n\n1. e4 {[%clk 0:10:00]} e5 {[%clk 0:09:58]} 1-0')).toBeNull()
+  })
+})
+
+describe('storage failure recovery', () => {
+  it('keeps multiple shares accessible when session storage throws', async () => {
+    vi.resetModules()
+    const { enqueueSharedPayload, peekSharedPayload, removeSharedPayload } = await import('./sharedPgn')
+    const old = Object.getOwnPropertyDescriptor(globalThis, 'sessionStorage')
+    Object.defineProperty(globalThis, 'sessionStorage', { configurable: true, get() { throw new Error('unavailable') } })
+    try {
+      enqueueSharedPayload({ id: 'a', text: game })
+      enqueueSharedPayload({ id: 'b', error: 'invalid' })
+      expect(peekSharedPayload()).toMatchObject({ id: 'a', text: game, storageError: true })
+      removeSharedPayload()
+      expect(peekSharedPayload()).toMatchObject({ id: 'b', error: 'invalid' })
+      removeSharedPayload()
+    } finally {
+      if (old) Object.defineProperty(globalThis, 'sessionStorage', old)
+      else Reflect.deleteProperty(globalThis, 'sessionStorage')
+    }
+  })
+})
+
+
+it('preserves the existing queue when storage quota is exceeded', async () => {
+  vi.resetModules()
+  const { SHARED_PGN_KEY, enqueueSharedPayload, peekSharedPayload, removeSharedPayload } = await import('./sharedPgn')
+  const old = Object.getOwnPropertyDescriptor(globalThis, 'sessionStorage')
+  const existing = JSON.stringify([{ id: 'first', text: game }])
+  Object.defineProperty(globalThis, 'sessionStorage', { configurable: true, value: {
+    getItem: (key: string) => key === SHARED_PGN_KEY ? existing : null,
+    setItem: () => { throw new DOMException('Quota exceeded', 'QuotaExceededError') },
+    removeItem: () => {},
+  } })
+  try {
+    enqueueSharedPayload({ id: 'second', error: 'invalid' })
+    expect(peekSharedPayload()).toMatchObject({ id: 'first', text: game, storageError: true })
+    removeSharedPayload()
+    expect(peekSharedPayload()).toMatchObject({ id: 'second', error: 'invalid', storageError: true })
+    removeSharedPayload()
+  } finally {
+    if (old) Object.defineProperty(globalThis, 'sessionStorage', old)
+    else Reflect.deleteProperty(globalThis, 'sessionStorage')
+  }
 })
