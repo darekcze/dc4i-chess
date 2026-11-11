@@ -5,6 +5,7 @@ import { MagnifyingGlass, DownloadSimple, CheckCircle, FileArrowUp } from '@phos
 import { PageHeader, Panel, Segmented, Skeleton, toast, useOnline } from '../../ui/kit'
 import { chesscomArchives, chesscomMonth, importPgnText, importRemote, importedIds, lichessGames, NotFoundError, RateLimitError, type RemoteGame } from './sources'
 import { useSettings } from '../../settings'
+import { SHARED_PGN_EVENT, peekSharedPayload, removeSharedPayload, validateSharedPgn, type ShareError } from './sharedPgn'
 
 type Source = 'chesscom' | 'lichess' | 'pgn'
 
@@ -34,6 +35,53 @@ export default function Import() {
   const [error, setError] = useState<string | null>(null)
   const [have, setHave] = useState<Set<string>>(new Set())
   const [pgn, setPgn] = useState('')
+  const [shared, setShared] = useState(false)
+  const sharedRef = useRef(false)
+  const [storageError, setStorageError] = useState(false)
+  const [shareError, setShareError] = useState<ShareError | null>(null)
+  const shareMessage = (problem: ShareError) => {
+    const pl: Record<ShareError, string> = {
+      too_large: 'Plik jest za duży. Limit wynosi 2 MB.',
+      invalid: 'Nieprawidłowy PGN lub niedozwolone ruchy.',
+      unfinished: 'Można importować tylko zakończone partie z wynikiem.',
+      unreadable: 'Nie można odczytać udostępnionego pliku.',
+      timeout: 'Odczyt trwał zbyt długo. Udostępnij plik ponownie.',
+    }
+    const en: Record<ShareError, string> = {
+      too_large: 'The file is too large. The limit is 2 MB.',
+      invalid: 'Invalid PGN or illegal moves.',
+      unfinished: 'Only completed games with a result can be imported.',
+      unreadable: 'The shared file could not be read.',
+      timeout: 'Reading timed out. Please share the file again.',
+    }
+    return (lang === 'pl' ? pl : en)[problem]
+  }
+
+  useEffect(() => {
+    const receiveShare = () => {
+      if (sharedRef.current) return
+      const item = peekSharedPayload()
+      if (!item) return
+      sharedRef.current = true
+      setShared(true)
+      setStorageError(!!item.storageError)
+      setSource('pgn')
+      setPgn(item.text ?? '')
+      setShareError(item.error ?? (item.text ? validateSharedPgn(item.text) : 'invalid'))
+    }
+    receiveShare()
+    window.addEventListener(SHARED_PGN_EVENT, receiveShare)
+    return () => window.removeEventListener(SHARED_PGN_EVENT, receiveShare)
+  }, [])
+
+  const dismissShare = () => {
+    removeSharedPayload()
+    sharedRef.current = false
+    setShared(false)
+    setShareError(null)
+    setPgn('')
+    window.dispatchEvent(new Event(SHARED_PGN_EVENT))
+  }
   /** `until` cursor for the next page of Lichess games */
   const [lichessNext, setLichessNext] = useState<number | undefined>(undefined)
   const [loadingMore, setLoadingMore] = useState(false)
@@ -200,6 +248,11 @@ export default function Import() {
 
   const importPgn = (text: string) =>
     exclusive(async () => {
+      if (shared) {
+        const problem = validateSharedPgn(text)
+        setShareError(problem)
+        if (problem) return
+      }
       // the names remembered from chess.com and Lichess tell which side is the user's
       const { rows, existing, failed } = await importPgnText(text, {
         usernames: [remembered('chesscom'), remembered('lichess')],
@@ -212,7 +265,14 @@ export default function Import() {
       }
       if (rows.length > existing) toast(t('import.imported', { count: rows.length - existing }), 'success')
       if (existing) toast(t('import.alreadyHad', { count: existing }))
-      setPgn('')
+      if (shared) {
+        dismissShare()
+        if (peekSharedPayload()) return
+      } else {
+        sharedRef.current = false
+        setShared(false)
+        setPgn('')
+      }
       if (rows.length === 1) nav(`/review/${rows[0].id}`)
       else nav('/games')
     })
@@ -354,6 +414,10 @@ export default function Import() {
           </>
         ) : (
           <Panel className="p-4">
+            {shared && <p className="mb-2 text-fg-2">{lang === 'pl' ? 'Sprawdź udostępnioną partię przed importem.' : 'Review the shared game before importing.'}</p>}
+            {shared && storageError && <p role="alert">{lang === 'pl' ? 'Nie można zapisać udostępnienia w pamięci sesji. Zaimportuj je teraz lub udostępnij ponownie po odświeżeniu.' : 'Session storage is unavailable. Import this share now or share it again after reloading.'}</p>}
+            {shareError && <p role="alert" className="mb-2 text-danger">{shareMessage(shareError)}</p>}
+            {shared && <button type="button" className="btn mb-2" onClick={dismissShare}>{lang === 'pl' ? 'Odrzuć i wybierz ponownie' : 'Discard and try again'}</button>}
             <label htmlFor="imp-pgn" className="mb-1.5 block text-[13px] font-bold text-fg-3">
               {t('import.pastePgn')}
             </label>

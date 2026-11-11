@@ -1,1 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="96" fill="#263a36"/><path fill="#50776b" d="M64 64h192v192H64zm192 192h192v192H256z"/><path fill="#f5e8c7" d="M139 397h242l-13-44h-29c3-73-5-132-51-173l-8-53-36 23-33-8-40 65-36 25 13 40 58-13 30 19c-13 28-29 50-42 75h-42zm61-174 24-41 23 5-22 30z"/><circle cx="224" cy="199" r="6" fill="#263a36"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0c1220"/>
+  <!-- Original geometric knight: the cutout suggests a crescent and the base a rook. -->
+  <path fill="#5ee2cc" fill-rule="evenodd" d="M160 377h192v30H160zm19-15 15-46c7-21 18-38 33-55l-42 11-20-23 43-47 21-54 27 17 29-35 25 48c48 18 70 62 61 110l-15 74H179zm78-145 13-14 14 8-7 13-20-7zm41 37c20 16 26 42 15 66-1-26-10-45-30-58l15-8z"/>
+  <path fill="#f7c66c" d="m197 377 17-18h84l17 18z"/>
+</svg>

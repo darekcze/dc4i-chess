@@ -4,9 +4,9 @@ const config: CapacitorConfig = {
   appId: 'com.dc4i.szachy',
   appName: 'Szachy',
   webDir: 'dist',
-  backgroundColor: '#302e2b',
+  backgroundColor: '#0c1220',
   plugins: {
-    SplashScreen: { launchAutoHide: true, backgroundColor: '#302e2b', showSpinner: false },
+    SplashScreen: { launchAutoHide: true, backgroundColor: '#0c1220', showSpinner: false },
   },
 }
 

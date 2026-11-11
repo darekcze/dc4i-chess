@@ -72,8 +72,8 @@ export default defineConfig({
         name: 'Szachy',
         short_name: 'Szachy',
         description: 'Darmowa gra i trening szachowy na Twoim urządzeniu.',
-        theme_color: '#262421',
-        background_color: '#302e2b',
+        theme_color: '#0c1220',
+        background_color: '#0c1220',
         display: 'standalone',
         // the manifest text is Spanish; the app itself follows the user's language
         lang: 'pl',

@@ -30,10 +30,15 @@ import { fmtDecimal } from '../../i18n/format'
 import { put } from '../../db/db'
 import { saveTextFile } from '../../ui/files'
 import { annotatedPgn } from './pgnExport'
-import { aboutReply, bestLineAt, explainPly, positionScore, type Explanation, type StoredReview } from './explain'
+import { aboutReply, bestLineAt, positionScore, type Explanation, type StoredReview } from './explain'
+import { reviewEvidence, type ReviewEvidence } from './reviewEvidence'
 import { playLine } from './line'
 
 type Mode = 'summary' | 'moves'
+
+export function reviewForDisplay(review: StoredReview | undefined): StoredReview | undefined {
+  return review
+}
 
 export default function Review() {
   const { id = '' } = useParams()
@@ -103,8 +108,8 @@ export default function Review() {
 
   const parsed = useMemo(() => (game ? parseGame(game.pgn) : null), [game])
   const sans = useMemo(() => parsed?.moves.map((m) => m.san) ?? [], [parsed])
-  const qualities = useMemo(() => game?.review?.moves.map((m) => m.quality), [game?.review])
-  const review = game?.review
+  const review = reviewForDisplay(game?.review)
+  const qualities = useMemo(() => review?.moves.map((m) => m.quality), [review])
   const total = parsed?.moves.length ?? 0
   // the turning points: great finds and errors, the user's own when we know their colour
   const keyMoments = useMemo(
@@ -151,10 +156,9 @@ export default function Review() {
   )
 
   // why the viewed move was bad; the line after it starts with the opponent's reply
-  const { why, replyLine } = useMemo(() => {
-    if (!review || !parsed || ply === 0) return { why: null, replyLine: undefined }
-    return { why: explainPly(review, parsed.fens, ply), replyLine: bestLineAt(review, ply) }
-  }, [review, parsed, ply])
+  const evidence = useMemo(() => review && parsed ? reviewEvidence(review, parsed.fens, ply) : null, [review, parsed, ply])
+  const why = evidence?.explanation ?? null
+  const replyLine = review && why ? bestLineAt(review, ply) : undefined
 
   const keyGoto = useCallback((p: number) => lineKeys.current?.(p) || goto(p), [goto])
   useBoardKeys({ ply, total, goto: keyGoto, flip: () => setOrientation((o) => (o === 'white' ? 'black' : 'white')) })
@@ -392,7 +396,7 @@ export default function Review() {
             <>
               <Coach
                 move={current}
-                why={why}
+                evidence={evidence}
                 retry={retry}
                 variation={!!variation && !retry}
                 onBest={showBest}
@@ -676,64 +680,46 @@ function QualityRow({ q, w, b }: { q: Quality; w: number; b: number }) {
   )
 }
 
-function Coach({
-  move,
-  why,
-  retry,
-  variation,
-  onBest,
-  onRetry,
-}: {
+export const REPORT_COPY = {
+  pl: { title: 'Raport ruchu', played: 'Zagrano', best: 'Zapisany najlepszy ruch silnika', line: 'Przykładowy wariant', depth: 'Głębokość wariantu', target: 'Docelowa głębokość analizy', eval: 'Zapisane oceny silnika przed → po (z perspektywy białych)', caveat: 'Pochodzenia zapisanych wyników nie można niezależnie potwierdzić. Płytka analiza może być mniej wiarygodna.', unavailable: 'Brak poprawnego zapisanego wariantu. Uruchom analizę ponownie.', noTactic: 'Nie wykryto motywu taktycznego w dostępnych danych.', unknown: 'brak danych' },
+  en: { title: 'Move report', played: 'Played', best: 'Recorded engine best move', line: 'Example variation', depth: 'Variation depth', target: 'Target review depth', eval: 'Recorded engine evaluations before → after (White’s perspective)', caveat: 'The provenance of recorded results cannot be independently confirmed. Shallow analysis may be less reliable.', unavailable: 'No valid recorded variation available. Reanalyze to obtain one.', noTactic: 'No tactical motif detected in the available data.', unknown: 'unavailable' },
+}
+
+function Coach({ move, evidence, retry, variation, onBest, onRetry }: {
   move?: MoveReview
-  why: Explanation | null
+  evidence: ReviewEvidence | null
   retry: null | 'waiting' | 'wrong' | 'right'
   variation: boolean
   onBest: () => void
   onRetry?: () => void
 }) {
   const { t, i18n } = useTranslation()
-  if (!move)
-    return (
-      <div className="border-b border-line p-4 text-fg-2">
-        <p>{t('review.start')}</p>
-      </div>
-    )
-  const text =
-    retry === 'waiting'
-      ? t('review.retryPrompt')
-      : retry === 'wrong'
-        ? t('review.retryWrong')
-        : retry === 'right'
-          ? t('review.retryRight')
-          : t(`review.explain.${move.quality}`, { san: move.san })
-  const whyText = why && !retry ? describeWhy(why, t, i18n.language) : null
-  const showBestLine = !retry && move.bestSan && !['best', 'book', 'forced', 'brilliant', 'great'].includes(move.quality)
+  const copy = i18n.language.toLowerCase().startsWith('pl') ? REPORT_COPY.pl : REPORT_COPY.en
+  if (!move) return <div className="border-b border-line p-4 text-fg-2"><p>{t('review.start')}</p></div>
+  const retryText = retry === 'waiting' ? t('review.retryPrompt') : retry === 'wrong' ? t('review.retryWrong') : retry === 'right' ? t('review.retryRight') : null
   return (
-    <div key={move.ply + (retry ?? '')} className="enter border-b border-line p-4">
-      <div className="flex items-start gap-3">
-        <QualityIcon quality={retry === 'right' ? 'best' : retry === 'wrong' ? 'mistake' : move.quality} size={30} />
-        <div className="min-w-0 flex-1">
-          <p className="text-[16px] font-bold leading-snug" style={{ color: retry ? undefined : qualityColor(move.quality) }}>
-            {text}
-          </p>
-          {whyText && <p className="mt-0.5 text-[14px] text-fg">{whyText}</p>}
-          {showBestLine && <p className="mt-0.5 text-[14px] text-fg-2">{t('review.bestWas', { san: move.bestSan })}</p>}
-        </div>
-        <span className="tabular rounded bg-panel-2 px-2 py-1 font-mono text-[13px] font-bold">{formatScore(move.scoreAfter)}</span>
-      </div>
-      {showBestLine && (
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <button className={`btn ${variation ? 'ring-2 ring-accent' : ''}`} onClick={onBest}>
-            <Crown size={18} weight="fill" style={{ color: 'var(--q-best)' }} /> {t('review.showBest')}
-          </button>
-          {onRetry && (
-            <button className="btn" onClick={onRetry}>
-              <ArrowCounterClockwise size={18} weight="bold" /> {t('review.retry')}
-            </button>
-          )}
-        </div>
-      )}
-    </div>
+    <section className="enter border-b border-line p-4" aria-label={copy.title}>
+      {retryText ? <p className="font-bold" role="status">{retryText}</p> : <>
+        <h2 className="text-[16px] font-bold">{copy.title}</h2>
+        <p className="mt-2 text-[15px]"><strong>{copy.played}:</strong> {evidence?.playedSan ?? move.san}</p>
+        {evidence ? <div className="mt-2 space-y-2 text-[14px] leading-relaxed">
+          <p><strong>{copy.best}:</strong> {evidence.bestSan}</p>
+          <p><strong>{copy.line}:</strong> <span className="font-mono">{evidence.line.join(' ')}</span></p>
+          <p><strong>{copy.depth}:</strong> {evidence.depth} · {copy.target}: {evidence.reviewDepth}</p>
+          <p><strong>{copy.eval}:</strong> {evidence.before ? formatScore(evidence.before) : copy.unknown} → {evidence.after ? formatScore(evidence.after) : copy.unknown}</p>
+          <p>{copy.caveat}</p>
+          <p>{evidence.explanation ? describeWhy(evidence.explanation, t, i18n.language) : copy.noTactic}</p>
+        </div> : <p className="mt-2 text-[14px] leading-relaxed">{copy.unavailable}</p>}
+      </>}
+      {!retry && (evidence || onRetry) && <div className="mt-3 flex flex-wrap gap-2">
+        {evidence && <button className={`btn min-h-11 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${variation ? 'ring-2 ring-accent' : ''}`} onClick={onBest}>
+          <Crown size={18} weight="fill" style={{ color: 'var(--q-best)' }} /> {t('review.showBest')}
+        </button>}
+        {onRetry && <button className="btn btn-primary min-h-11 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" onClick={onRetry}>
+          <ArrowCounterClockwise size={18} weight="bold" /> {t('review.retry')}
+        </button>}
+      </div>}
+    </section>
   )
 }
 
