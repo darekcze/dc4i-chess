@@ -16,10 +16,10 @@ def (vMajor, vMinor, vPatch) = appVersion.tokenize('-')[0].tokenize('.').collect
 def appVersionCode = vMajor * 1000000 + vMinor * 1000 + vPatch
 
 android {
-    namespace = "com.openchess.app"
+    namespace = "com.dc4i.szachy"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.openchess.app"
+        applicationId "com.dc4i.szachy"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode appVersionCode

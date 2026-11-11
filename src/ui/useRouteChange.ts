@@ -28,7 +28,7 @@ export function useRouteChange(main: RefObject<HTMLElement | null>) {
   // a layout effect, so a page's own passive effect (NotFound) can still override it
   useLayoutEffect(() => {
     const key = SECTION_TITLE[section]
-    document.title = key ? `${t(key)} · Open Chess` : 'Open Chess'
+    document.title = key ? `${t(key)} · Szachy` : 'Szachy'
   }, [section, t])
 
   // compared by path rather than a first-run flag, which StrictMode's double effect run would clear

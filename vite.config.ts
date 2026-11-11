@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import { readdirSync } from 'node:fs'
 
 // the defaults in src/settings.ts: only these are precached, the other sets cache when picked
-const DEFAULT_PIECES = 'staunty'
+const DEFAULT_PIECES = 'chessnut'
 const DEFAULT_SOUNDS = 'wood'
 const otherSoundSets = readdirSync('public/sounds').filter((d) => d !== DEFAULT_SOUNDS)
 
@@ -69,14 +69,14 @@ export default defineConfig({
       manifest: {
         // a stable identity, so a future change of start_url doesn't install a second app
         id: './',
-        name: 'Open Chess',
-        short_name: 'Open Chess',
-        description: 'Entrena ajedrez gratis: bots, revisión de partidas, puzzles, aperturas y lecciones.',
+        name: 'Szachy',
+        short_name: 'Szachy',
+        description: 'Darmowa gra i trening szachowy na Twoim urządzeniu.',
         theme_color: '#262421',
         background_color: '#302e2b',
         display: 'standalone',
         // the manifest text is Spanish; the app itself follows the user's language
-        lang: 'es',
+        lang: 'pl',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },

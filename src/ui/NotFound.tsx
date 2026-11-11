@@ -9,7 +9,7 @@ export function NotFound() {
   const { pathname } = useLocation()
   // a passive effect runs after Layout's layout-effect title, so this one wins
   useEffect(() => {
-    document.title = `${t('common.notFoundTitle')} · Open Chess`
+    document.title = `${t('common.notFoundTitle')} · Szachy`
   }, [t, pathname])
   return (
     <div className="mx-auto max-w-2xl pb-8">

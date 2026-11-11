@@ -2,7 +2,7 @@ import { useSyncExternalStore } from 'react'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export const PIECE_SETS = ['staunty', 'fresca', 'tatiana', 'maestro', 'california', 'cardinal', 'gioco', 'chessnut', 'cburnett'] as const
+export const PIECE_SETS = ['chessnut', 'cburnett'] as const
 export type PieceSet = (typeof PIECE_SETS)[number]
 
 export const SOUND_SETS = ['wood', 'sfx', 'piano', 'nes', 'futuristic'] as const
@@ -64,7 +64,7 @@ export const useSettings = create<Settings>()(
       lang: detectLang(),
       theme: 'system',
       board: 'green',
-      pieces: 'staunty',
+      pieces: 'chessnut',
       sound: true,
       soundSet: 'wood',
       coords: true,

@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">Szachy</string>
     <string name="title_activity_main">Szachy</string>
-    <string name="package_name">com.openchess.app</string>
-    <string name="custom_url_scheme">com.openchess.app</string>
+    <string name="package_name">com.dc4i.szachy</string>
+    <string name="custom_url_scheme">com.dc4i.szachy</string>
 </resources>

@@ -2,7 +2,7 @@
 // Licences: see README (most sets are CC BY-NC-SA 4.0, chessnut Apache 2.0, cburnett GPL).
 import { mkdirSync, writeFileSync, existsSync } from 'node:fs'
 
-export const SETS = ['staunty', 'fresca', 'tatiana', 'maestro', 'california', 'cardinal', 'gioco', 'chessnut', 'cburnett']
+export const SETS = ['chessnut', 'cburnett']
 const ROLES = { P: 'pawn', N: 'knight', B: 'bishop', R: 'rook', Q: 'queen', K: 'king' }
 const BASE = 'https://raw.githubusercontent.com/lichess-org/lila/master/public/piece'
 

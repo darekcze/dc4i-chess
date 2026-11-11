@@ -7,6 +7,7 @@ import { PageHeader, Panel, SkeletonText } from '../../ui/kit'
 import { db, kvGet, kvSet } from '../../db/db'
 import { fmtDecimal } from '../../i18n/format'
 import { useSettings } from '../../settings'
+import { coachPlan, coachPuzzleProgress } from './coach'
 import { PHASES, TREND_GAMES, buildPlan, buildProfile, dayKey, dayProgress, planIsCurrent, weekStart, type PlanDay, type Profile, type WeeklyPlan } from './profile'
 
 /** Below this many reviewed games the profile is mostly noise. */
@@ -32,6 +33,7 @@ export default function Training() {
     <div className="mx-auto max-w-4xl pb-8">
       <PageHeader title={t('training.title')} />
       <div className="grid gap-4 px-4 lg:px-6">
+        <DailyCoach />
         {!profile ? (
           <Panel className="space-y-3 p-4">
             <SkeletonText width="60%" />
@@ -212,4 +214,43 @@ function Openings({ profile }: { profile: Profile }) {
       )}
     </Panel>
   )
+}
+
+/** A local, transparent coaching routine based on reviewed completed Chess.com imports. */
+function DailyCoach() {
+  const lang = useSettings((s) => s.lang)
+  const pl = String(lang) === 'pl'
+  const { t } = useTranslation()
+  const today = dayKey(new Date())
+  const games = useLiveQuery(() => db.games.filter((g) => !g.deleted && g.source === 'chesscom' && g.result !== '*' && !!g.review && !!g.userColor).toArray(), [])
+  const progress = useLiveQuery(() => kvGet<Record<string, boolean>>(`coach:${today}`, {}), [today])
+  const attempts = useLiveQuery(() => db.puzzleAttempts.toArray(), [])
+  const profile = useMemo(() => games ? buildProfile(games) : undefined, [games])
+  const plan = profile ? coachPlan(profile) : null
+  const done = (key: string, value: boolean) => void kvSet(`coach:${today}`, { ...progress, [key]: value })
+  return <section aria-labelledby="daily-coach-title">
+    <Panel className="grid gap-3 p-5">
+      <h2 id="daily-coach-title" className="text-[20px] font-extrabold">{pl ? 'Trener na dziś' : 'Your daily coach'}</h2>
+      <p className="text-sm text-fg-2">{pl ? 'Plan powstaje lokalnie z przeanalizowanych, zakończonych partii Chess.com. To reguły treningowe, nie model AI.' : 'A local rules-based plan from your reviewed, completed Chess.com games. No AI model is used.'}</p>
+      {!profile ? <SkeletonText width="60%" /> : profile.games === 0 ? <>
+        <p>{pl ? 'Zaimportuj zakończone partie, a następnie uruchom ich analizę i wskaż swój kolor.' : 'Import completed games, then review them and identify your colour.'}</p>
+        <div className="flex flex-wrap gap-2"><Link className="btn btn-primary" to="/import">{pl ? 'Importuj partie' : 'Import games'}</Link><Link className="btn" to="/games">{pl ? 'Moje partie' : 'My games'}</Link></div>
+      </> : <>
+        <p className="text-sm text-fg-2">{pl ? `Przeanalizowane partie: ${profile.games}.` : `Reviewed games: ${profile.games}.`} {plan?.theme ? (pl ? `Najczęstszy motyw: ${t(`themes.${plan.theme}`, plan.theme)} (${plan.count}).` : `Top theme: ${t(`themes.${plan.theme}`, plan.theme)} (${plan.count}).`) : (pl ? 'Nie wykryto jeszcze motywu taktycznego.' : 'No tactical theme detected yet.')}</p>
+        <ol className="grid gap-3 list-decimal pl-5">
+          <li><p>{pl ? 'Obejrzyj pozycję i przed odczytaniem analizy znajdź ruch przeciwnika oraz własną odpowiedź.' : "Study the position and find the opponent's threat and your reply before reading the analysis."}</p>
+            {plan?.example ? <Link className="btn mt-2" to={`/review/${plan.example.gameId}?ply=${plan.example.ply}`}>{pl ? 'Otwórz pozycję z partii' : 'Open position in review'}</Link> : <Link className="btn mt-2" to="/games">{pl ? 'Przejrzyj partie' : 'Review games'}</Link>}
+            <label className="mt-2 flex gap-2"><input type="checkbox" checked={!!progress?.review} onChange={(e) => done('review', e.target.checked)} />{pl ? 'Samodzielnie przeanalizowano' : 'I studied the position'}</label>
+          </li>
+          <li><p>{pl ? 'Rozwiąż trzy zadania z tego motywu. Po błędzie wróć i spróbuj ponownie.' : 'Solve three puzzles on this theme. After a mistake, return and try again.'}</p>
+            {plan?.theme ? <><Link className="btn mt-2" to={`/puzzles/rated?theme=${plan.theme}`}>{pl ? 'Ćwicz motyw' : 'Practise theme'}</Link><p aria-live="polite" className="mt-1 text-sm">{pl ? 'Rozwiązane dziś' : 'Solved today'}: {Math.min(3, coachPuzzleProgress(plan.theme, today, attempts ?? []))}/3</p></> : <Link className="btn mt-2" to="/puzzles">{pl ? 'Otwórz zadania' : 'Open puzzles'}</Link>}
+          </li>
+          <li><p>{pl ? 'Utrwal zasadę na lekcji, a następnie zapisz w pamięci, co sprawdzisz przed kolejnym ruchem.' : 'Reinforce the idea in a lesson, then decide what to check before your next move.'}</p><Link className="btn mt-2" to={`/lessons/${plan?.lesson ?? 'hanging-pieces'}`}>{pl ? 'Otwórz lekcję' : 'Open lesson'}</Link>
+            <label className="mt-2 flex gap-2"><input type="checkbox" checked={!!progress?.lesson} onChange={(e) => done('lesson', e.target.checked)} />{pl ? 'Lekcja i refleksja ukończone' : 'Lesson and reflection complete'}</label>
+          </li>
+        </ol>
+        <p className="text-xs text-fg-3">{pl ? 'Pola zaznaczasz samodzielnie. Wyniki zadań są liczone automatycznie i zapisywane na urządzeniu.' : 'You check the boxes yourself. Puzzle results are counted automatically and saved on this device.'}</p>
+      </>}
+    </Panel>
+  </section>
 }

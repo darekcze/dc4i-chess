@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
-  appId: 'com.openchess.app',
+  appId: 'com.dc4i.szachy',
   appName: 'Szachy',
   webDir: 'dist',
   backgroundColor: '#302e2b',
