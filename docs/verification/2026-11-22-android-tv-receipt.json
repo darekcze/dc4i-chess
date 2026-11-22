@@ -1,0 +1,48 @@
+{
+  "applicationId": "com.dc4i.szachy",
+  "versionName": "0.8.2-tv.alpha.2",
+  "versionCode": 8003,
+  "sourceRepository": "https://github.com/darekcze/dc4i-chess",
+  "sourceRevision": "7efd52c31728f5450f0604ff33f9350f0e022823",
+  "branch": "fix/android-tv-remote-20261122",
+  "artifact": "Szachy-0.8.2-tv.alpha.2.apk",
+  "artifactPath": "/Volumes/AI-Hot/Services/Scratch/chromecast-lab-20261122/Szachy-0.8.2-tv.alpha.2.apk",
+  "bytes": 14390872,
+  "sha256": "11b3b4e487018402d992757851adba2238af3bf14c71646d4c77852f0b9c18e4",
+  "signerSha256": "80485ca87c606dd37384034d4ea3adaac5ac1c6edf2d8ff6fb27abd9077fc1a3",
+  "signedAtUtc": "2026-11-22T15:57:42.039691+00:00",
+  "changeFromCode8002": "TV-only wrapping of translated game action labels. Input/gameplay code unchanged.",
+  "targetedVerification": "PASS: existing960x540 post-move fixture with real pl-PL locale and label/action bounds; visual screenshot inspected. Lint0warnings0errors; productionTS/Vite, Capacitor sync and native Gradle build PASS.",
+  "physicalAcceptance": {
+    "status": "PASS",
+    "controllerObservedAtUtc": "2026-11-22T16:08:01.780997+00:00",
+    "checks": [
+      "In-place update and version8003 readback",
+      "Saved black-side Pip game retained with moves1.a4 e5 2.e3",
+      "Board and all actions above navigation",
+      "Polish draw label wraps legibly into two lines inside button without clipping"
+    ],
+    "evidence": [
+      "chess8003-install.json",
+      "chess8003-final-game.png/XML"
+    ],
+    "scope": "Actual single-controller Living Room TV test; separate from code8002 setup/gameplay acceptance"
+  },
+  "publicReleaseMutated": false,
+  "priorCode8002PhysicalAcceptance": {
+    "status": "PASS",
+    "method": "Single controller using D-pad on actual Living Room TV",
+    "checks": [
+      "Saved QA game retained after update; Back save",
+      "Bot group and Pip selection",
+      "Visible scrolling bot-list focus",
+      "Black color selection; Down reaches Play directly without clipped bots",
+      "Black e7-e5 and bot reply",
+      "Board/action layout above navigation",
+      "Board-edge exit to Undo without an extra move",
+      "Home and app switch"
+    ],
+    "radioDefect": "Not confirmed; paced single key events worked",
+    "userData": "Only controller-created short QA game discarded; other data preserved"
+  }
+}

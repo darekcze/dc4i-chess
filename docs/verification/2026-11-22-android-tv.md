@@ -2,6 +2,8 @@
 
 English | [Polski](../pl/2026-11-22-android-tv.md)
 
+Current result: code 8003 is installed and physically accepted, including retained game and wrapped Polish labels. Code 8002 completed setup and gameplay acceptance. See [iteration 3](#iteration-3-accepted-device-behavior-and-bounded-label-polish); earlier pending statements are historical checkpoints.
+
 ## Scope and observed failure
 
 Dariusz authorized installation, real-device testing and scoped corrective builds
@@ -123,3 +125,71 @@ The measured 960 px setup sequence from focused Play heading is Down to Bots,
 Down to Pip, OK to select. Down proceeds through the scrolling bot rows; after the
 last row it exits to color, and the next Down reaches Play. From color, Down now
 reaches Play directly. Existing data must be retained during the update.
+
+## Iteration 3: accepted device behavior and bounded label polish
+
+This section is the current checkpoint. The earlier pending statements document
+the earlier handoffs and do not override the physical results below.
+
+### Code 8002 physical acceptance
+
+The sole device controller verified the following on Living Room TV with D-pad
+input and screenshots/UI readback:
+
+- In-place update retained the existing QA game, 1.e4 e5. Back saved the game
+  and returned to setup with the save message.
+- Home to Play, the Bots group, Pip selection and bot-list scrolling worked.
+  The focused bot remained visible after the list scrolled.
+- Selecting black and pressing Down reached the visible Play button directly,
+  without focusing a hidden bot above the color controls.
+- A new black game started. Pip played 1.a4; focus began at e7 and OK, Up, Up,
+  OK played 1...e5. Pip replied 2.e3.
+- Board and side controls remained above the fixed bottom navigation at the
+  physical 1280x720 / density 213 display.
+- Moving beyond the board edge reached Undo without adding a move. Home and
+  switching to another app worked.
+- Individual Left events with an observed rerender between them select bot
+  groups correctly. An initial rapid batch was not a confirmed radio defect;
+  no radio or gameplay logic was changed on that basis.
+
+Only the controller-created short QA game was discarded for this setup test.
+Other user data was preserved. Evidence names include chess8002-resumed,
+chess8002-back, chess8002-pip-selected, chess8002-bot-list-scroll,
+chess8002-color-focus, chess8002-black-start-focus, chess8002-black-game,
+chess8002-black-e5 and chess8002-board-exit in the private lab directory.
+
+### Code 8003: long translated action labels
+
+The accepted layout still let the long Polish label "Zaproponuj remis" run
+adjacent to "Cofnij". A single TV-only CSS rule gives the existing action label
+span a bounded width and normal wrapping. Input, game state and game logic are
+unchanged. Phone styles remain outside that selector.
+
+The existing post-move 960x540 browser fixture now uses a real pl-PL browser
+locale, plays e4 and waits for the bot reply, then checks each action label's
+bounds against its button and each action's position above navigation. It passed,
+and the resulting screenshot was inspected: the long draw label occupies two
+clear lines. Lint reported zero warnings/errors. Production TypeScript/Vite,
+Capacitor sync and native Gradle assembly passed. No full-suite expansion was
+performed for this CSS-only change; the earlier seven-test and 24-test counts
+belong to their respective iterations.
+
+- Code source: [7efd52c31728f5450f0604ff33f9350f0e022823](https://github.com/darekcze/dc4i-chess/commit/7efd52c31728f5450f0604ff33f9350f0e022823).
+- Private version: 0.8.2-tv.alpha.2, versionCode 8003.
+- File: Szachy-0.8.2-tv.alpha.2.apk, 14,390,872 bytes.
+- APK SHA-256: 11b3b4e487018402d992757851adba2238af3bf14c71646d4c77852f0b9c18e4.
+- Signer SHA-256: 80485ca87c606dd37384034d4ea3adaac5ac1c6edf2d8ff6fb27abd9077fc1a3.
+- Native parameters: -PandroidVersionCode=8003 -PandroidVersionName=0.8.2-tv.alpha.2.
+- Built on mini, signed with the existing matching Mac Pro debug identity,
+  then checked again after transfer to the mini lab directory.
+- [Sanitized artifact and acceptance receipt](2026-11-22-android-tv-receipt.json).
+  Local receipt: chess-tv3-receipt.json.
+
+Code 8003 physical acceptance PASS. The controller verified the in-place update,
+version code, resumed black-side Pip game and the final screenshot/UI readback.
+The retained moves were 1.a4 e5 2.e3, unchanged by the update. The board and all
+actions remain above bottom navigation. "Zaproponuj remis" wraps into two legible
+lines inside its button without clipping. Evidence: chess8003-install.json and
+chess8003-final-game.png/XML in the private lab directory. The final package
+check is separate from code 8002's earlier full setup/gameplay acceptance.
+No public release or hosted CI was started.

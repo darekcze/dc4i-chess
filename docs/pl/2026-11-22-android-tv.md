@@ -2,6 +2,8 @@
 
 [English](../verification/2026-11-22-android-tv.md) | Polski
 
+Bieżący wynik: kod 8003 jest zainstalowany i przyjęty na urządzeniu, z zachowaniem partii oraz czytelnymi polskimi etykietami. Kod 8002 przeszedł pełny test ustawień i gry. Wyniki opisuje trzecia iteracja poniżej; wcześniejsze oczekiwania są historycznymi punktami kontrolnymi.
+
 Dariusz zlecił instalację, testy na Living Room TV oraz poprawianie wykrytych
 problemów. Wersja 0.8.0 uruchamiała się w wąskim pionowym obszarze, zawijała
 tekst głównej akcji i ucinała etykietę dolnej nawigacji. Kod nie miał obsługi
@@ -67,3 +69,64 @@ chess-tv2-receipt.json są w prywatnym katalogu testów na Mac mini.
 
 W tym punkcie wersja8002 czeka na powtórny test fizycznego urządzenia.
 Nie należy utożsamiać sukcesu testów przeglądarkowych z zakończeniem tego odbioru.
+
+## Trzecia iteracja: odbiór urządzenia i zawijanie etykiet
+
+Ta sekcja jest bieżącym punktem kontrolnym. Wcześniejsze zapisy o oczekiwaniu
+opisują poprzednie przekazania i nie zastępują wyników poniżej.
+
+### Potwierdzone testy kodu 8002
+
+Jedyny kontroler urządzenia sprawdził pilotem, z odczytem ekranu:
+
+- Aktualizacja zachowała testową partię 1.e4 e5. Back zapisał ją i wrócił do
+  ustawień z komunikatem o zapisie.
+- Przejście z ekranu głównego do Graj, grupy Boty, wybór Pipa i przewijanie
+  listy działały. Wybrany element był widoczny po przewinięciu.
+- Po wyborze czarnych Down przechodził bezpośrednio do widocznego Graj,
+  bez wejścia w niewidocznego bota nad kontrolkami koloru.
+- Rozpoczęła się nowa gra czarnymi. Pip wykonał 1.a4, fokus był na e7,
+  a OK, Up, Up, OK wykonało 1...e5. Bot odpowiedział 2.e3.
+- Szachownica i przyciski pozostały nad dolnym menu przy fizycznym obrazie
+  1280x720 i gęstości 213.
+- Wyjście poza krawędź szachownicy przeniosło fokus na Cofnij bez dodania ruchu.
+  Home i przełączenie do innej aplikacji działały.
+- Pojedyncze Left z odczytem stanu po zmianie widoku poprawnie wybierały grupę
+  botów. Szybka wcześniejsza seria nie potwierdziła błędu grupy wyboru.
+  Nie zmieniano z tego powodu logiki pilota ani gry.
+
+Usunięto tylko krótką partię utworzoną przez kontrolera do testu. Pozostałe dane
+zachowano. Nazwy dowodów i dokładne warunki opisuje wersja angielska.
+
+### Kod 8003: długie polskie nazwy
+
+W przyjętym układzie tekst "Zaproponuj remis" nadal przylegał do "Cofnij".
+Jedna reguła CSS, wyłącznie dla TV, ogranicza szerokość etykiety i pozwala ją
+zawinąć. Logika wejścia, stan gry i działanie szachów pozostają bez zmian.
+Widok telefonu nie jest objęty tą regułą.
+
+Istniejący test po ruchu w 960x540 używa teraz rzeczywistego języka pl-PL,
+wykonuje e4, czeka na odpowiedź bota i sprawdza granice napisów wewnątrz
+przycisków oraz położenie przycisków nad menu. Test przeszedł. Obejrzany zrzut
+pokazuje czytelne dwie linie długiej etykiety. Lint nie zgłosił ostrzeżeń ani
+błędów. Przeszły TypeScript/Vite, synchronizacja Capacitor i budowa Androida.
+Dla tej zmiany CSS nie rozszerzano zestawu testów; wcześniejsze liczby siedem
+i 24 dotyczą odpowiednich poprzednich iteracji.
+
+Pakiet: Szachy-0.8.2-tv.alpha.2.apk, wersja 0.8.2-tv.alpha.2, kod 8003,
+14 390 872 bajty. SHA-256:
+11b3b4e487018402d992757851adba2238af3bf14c71646d4c77852f0b9c18e4.
+
+Źródło: 7efd52c31728f5450f0604ff33f9350f0e022823. Zachowano podpis istniejącej
+instalacji. Klucz pozostał na Mac Pro; po przesłaniu na mini ponownie sprawdzono
+sumę pliku. [Oczyszczony zapis artefaktu i odbioru](../verification/2026-11-22-android-tv-receipt.json)
+oraz prywatny chess-tv3-receipt.json zawierają dokładne dane.
+
+Odbiór kodu 8003 na urządzeniu: PASS. Kontroler potwierdził aktualizację bez
+usuwania danych, kod wersji, wznowienie partii czarnymi z Pipem oraz końcowy
+odczyt i zrzut ekranu. Ruchy 1.a4 e5 2.e3 pozostały niezmienione. Szachownica
+i wszystkie przyciski są nad dolnym menu. "Zaproponuj remis" zajmuje dwie
+czytelne linie wewnątrz przycisku, bez obcięcia. Dowody: chess8003-install.json
+oraz chess8003-final-game.png/XML w prywatnym katalogu testów. Ten odczyt
+aktualizacji jest osobny od wcześniejszych pełnych testów ustawień i gry na 8002.
+Nie opublikowano publicznego wydania ani nie uruchomiono hostowanego CI.
