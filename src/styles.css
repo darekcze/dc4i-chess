@@ -617,7 +617,45 @@ cg-board square.right {
   pointer-events: none;
 }
 :root[data-input='tv'] :focus {
+  scroll-margin: 8px;
   outline: 3px solid var(--accent-hi);
   outline-offset: 3px;
 }
 :root[data-input='tv'] [data-chess-board]:focus { outline-offset: 5px; }
+
+/* TV WebViews can be below the desktop breakpoint because of Android display density. */
+@media (max-width: 1023px) {
+  :root[data-input='tv'] main {
+    height: calc(100% - 64px - var(--inset-bottom));
+    padding-bottom: 0;
+    scroll-padding-block: 12px;
+  }
+}
+@media (min-width: 800px) and (max-width: 1023px) {
+  :root[data-input='tv'] .board-layout {
+    --side: 340px;
+    --bs: max(240px, min(
+      calc(100dvh - 64px - var(--inset-top) - var(--inset-bottom) - 2 * var(--pad) - var(--bars) * var(--bar) - 12px),
+      calc(100vw - var(--side) - var(--gap) - 2 * var(--pad))
+    ));
+    display: grid;
+    grid-template-columns: auto var(--side);
+    justify-content: center;
+    align-items: start;
+    gap: var(--gap);
+    padding: var(--pad);
+  }
+  :root[data-input='tv'] .bl-board {
+    width: var(--bs);
+    max-width: none;
+    margin: 0;
+  }
+  :root[data-input='tv'] .bl-side {
+    display: flex;
+    flex-direction: column;
+    height: calc(var(--bs) + var(--bars) * var(--bar));
+    overflow-y: auto;
+    padding: 0;
+    scroll-padding-block: 12px;
+  }
+}
