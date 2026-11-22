@@ -3,6 +3,7 @@ import { create } from 'zustand'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, X } from '@phosphor-icons/react'
+import { isAndroidTv } from './tvRemote'
 
 /* Overlays (sheets, menus) stack so Escape and the Android back button close the top one first. */
 const overlays: { current: () => void }[] = []
@@ -85,6 +86,7 @@ export function Segmented<T extends string | number>({
 }) {
   // radio-group keys: arrows move the choice (and keep them from stepping a board behind it)
   const onKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (isAndroidTv() && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) return
     const step = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0
     if (!step) return
     e.preventDefault()

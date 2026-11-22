@@ -7,6 +7,9 @@ import { App } from './App'
 import { Capacitor } from '@capacitor/core'
 import { useUpdate } from './ui/UpdateBanner'
 import { reloadOnce } from './ui/ErrorBoundary'
+import { installTvRemote } from './ui/tvRemote'
+
+installTvRemote()
 
 // a lazy screen whose chunk vanished with a new deploy: reload once onto the new version
 window.addEventListener('vite:preloadError', (e) => {

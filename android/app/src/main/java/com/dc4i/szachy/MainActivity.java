@@ -1,6 +1,8 @@
 package com.dc4i.szachy;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -46,7 +48,15 @@ public class MainActivity extends BridgeActivity {
 
     @Override
     public void onCreate(Bundle state) {
+        boolean television = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_TYPE_MASK)
+            == Configuration.UI_MODE_TYPE_TELEVISION;
+        setRequestedOrientation(television ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onCreate(state);
+        if (television && getBridge() != null) {
+            WebView view = getBridge().getWebView();
+            view.getSettings().setUserAgentString(view.getSettings().getUserAgentString() + " SzachyAndroidTV");
+        }
         current = new WeakReference<>(this);
         for (Share share : PENDING) { share.delivered = false; share.offset = 0; }
         if (state == null || !PROCESS_ID.equals(state.getString(STATE_PROCESS))) receive(getIntent());

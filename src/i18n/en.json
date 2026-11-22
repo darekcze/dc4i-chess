@@ -14,6 +14,7 @@
     "main": "Main"
   },
   "common": {
+    "boardKeyboard": "Chess board, square {{square}}. Arrows move the cursor, OK selects a piece or destination. Move past an edge to leave the board.",
     "white": "White",
     "black": "Black",
     "random": "Random",

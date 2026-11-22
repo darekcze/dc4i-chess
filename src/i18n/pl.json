@@ -14,6 +14,7 @@
     "main": "Główne"
   },
   "common": {
+    "boardKeyboard": "Szachownica, pole {{square}}. Strzałki przesuwają kursor, OK wybiera figurę lub pole docelowe. Przejdź poza krawędź, aby opuścić szachownicę.",
     "white": "Białe",
     "black": "Czarne",
     "random": "Losowo",

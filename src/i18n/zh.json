@@ -14,6 +14,7 @@
     "main": "主导航"
   },
   "common": {
+    "boardKeyboard": "棋盘，{{square}} 格。方向键移动光标，OK 选择棋子或目标。越过边缘以离开棋盘。",
     "white": "白方",
     "black": "黑方",
     "random": "随机",

@@ -14,6 +14,7 @@
     "main": "Principale"
   },
   "common": {
+    "boardKeyboard": "Échiquier, case {{square}}. Les flèches déplacent le curseur, OK choisit la pièce ou la destination. Dépassez un bord pour quitter le plateau.",
     "white": "Blancs",
     "black": "Noirs",
     "random": "Au hasard",

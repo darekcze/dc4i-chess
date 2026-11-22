@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { overlayOpen } from '../ui/kit'
+import { isAndroidTv } from '../ui/tvRemote'
 
 /**
  * Lichess-style keys for any board with a move history: ← → step, ↑ / Home first,
@@ -11,7 +12,8 @@ export function useBoardKeys({ ply, total, goto, flip }: { ply: number; total: n
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement | null
-      if (e.altKey || e.ctrlKey || e.metaKey || overlayOpen()) return
+      if (e.defaultPrevented || isAndroidTv() || e.altKey || e.ctrlKey || e.metaKey || overlayOpen()) return
+      if (el?.closest('[data-chess-board]')) return
       if (el && (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName))) return
       const s = state.current
       const to =

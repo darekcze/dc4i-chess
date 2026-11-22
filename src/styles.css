@@ -605,3 +605,19 @@ cg-board square.right {
 .bg-accent.text-white { color: var(--on-accent); }
 
 .field:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: 2px; }
+
+/* A high-contrast square cursor is independent from selected-piece and move hints. */
+.board-keyboard-cursor {
+  position: absolute;
+  width: 12.5%;
+  height: 12.5%;
+  z-index: 10;
+  border: 3px solid #fff;
+  box-shadow: inset 0 0 0 3px #101827;
+  pointer-events: none;
+}
+:root[data-input='tv'] :focus {
+  outline: 3px solid var(--accent-hi);
+  outline-offset: 3px;
+}
+:root[data-input='tv'] [data-chess-board]:focus { outline-offset: 5px; }

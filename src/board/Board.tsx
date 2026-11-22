@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { Chessground } from '@lichess-org/chessground'
 import type { Api } from '@lichess-org/chessground/api'
@@ -53,6 +53,9 @@ function BoardView({
   outcome,
   className = '',
 }: BoardProps) {
+  const { t } = useTranslation()
+  const [cursor, setCursor] = useState<Key>(orientation === 'white' ? 'e2' : 'e7')
+  const [boardFocused, setBoardFocused] = useState(false)
   const el = useRef<HTMLDivElement>(null)
   const api = useRef<Api | null>(null)
   const onMoveRef = useRef(onMove)
@@ -211,10 +214,44 @@ function BoardView({
     return { left: `${((col + 1) / 8) * 100 - 1.5}%`, top: `${(row / 8) * 100 + 1.5}%` }
   }, [badge, orientation])
 
+  const moveCursor = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget || promo) return
+    const delta = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[event.key]
+    if (delta) {
+      const sign = orientation === 'white' ? 1 : -1
+      const file = FILES.indexOf(cursor[0]) + delta[0] * sign
+      const rank = Number(cursor[1]) + delta[1] * sign
+      // At the edge the TV focus manager can leave the board, avoiding a focus trap.
+      if (file < 0 || file > 7 || rank < 1 || rank > 8) return
+      event.preventDefault()
+      event.stopPropagation()
+      setCursor(`${FILES[file]}${rank}` as Key)
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      event.stopPropagation()
+      if (movable !== 'none') api.current?.selectSquare(cursor)
+    } else if (event.key === 'Escape' && api.current?.state.selected) {
+      event.preventDefault()
+      event.stopPropagation()
+      api.current.selectSquare(null)
+    }
+  }
+  const cursorFile = FILES.indexOf(cursor[0])
+  const cursorRank = Number(cursor[1]) - 1
+  const cursorStyle = {
+    left: `${(orientation === 'white' ? cursorFile : 7 - cursorFile) * 12.5}%`,
+    top: `${(orientation === 'white' ? 7 - cursorRank : cursorRank) * 12.5}%`,
+  }
   const promoColor = chess?.turn() === 'b' ? 'b' : 'w'
 
   return (
-    <div className={`relative aspect-square w-full select-none ${className}`}>
+    <div className={`relative aspect-square w-full select-none ${className}`}
+      data-chess-board tabIndex={0} role="group"
+      aria-label={t('common.boardKeyboard', { square: cursor })}
+      onKeyDown={moveCursor}
+      onFocus={(event) => { if (event.target === event.currentTarget) setBoardFocused(true) }}
+      onBlur={() => setBoardFocused(false)}>
+      {boardFocused && <div className="board-keyboard-cursor" style={cursorStyle} aria-hidden />}
       <div ref={el} style={{ position: 'absolute', inset: 0 }} />
       {badge && badgePos && <QualityBadge quality={badge.quality} style={badgePos} />}
       {outcome && chess && <OutcomeMarks chess={chess} outcome={outcome} orientation={orientation} />}
