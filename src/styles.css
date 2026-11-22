@@ -659,3 +659,11 @@ cg-board square.right {
     scroll-padding-block: 12px;
   }
 }
+
+/* Long translated action labels remain inside their TV controls. */
+:root[data-input='tv'] .bl-side button.btn > span.truncate {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

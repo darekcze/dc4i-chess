@@ -93,24 +93,32 @@ test('TV remote selects a bot, scrolls its list and starts a game from setup wit
   await expect(page.locator('[data-chess-board]')).toBeVisible()
 })
 
-test('TV game keeps actions beside the board above navigation after a move at device density', async ({ page }) => {
-  await page.setViewportSize({ width: 960, height: 540 })
-  await page.goto('/#/play/bot/pip?color=w&tc=none&eval=0')
-  const board = page.locator('[data-chess-board]')
-  await board.focus()
-  await page.keyboard.press('Enter')
-  await page.keyboard.press('ArrowUp')
-  await page.keyboard.press('ArrowUp')
-  await page.keyboard.press('Enter')
-  await expect(page.locator('.tabular button:visible')).toHaveCount(2, { timeout: 20_000 })
-  const boardBox = (await board.boundingBox())!
-  const navigation = (await page.locator('nav:visible').boundingBox())!
-  for (const label of ['Hint', 'Undo', 'Offer draw', 'Resign']) {
-    const action = page.getByRole('button', { name: label, exact: true })
-    await expect(action).toBeVisible()
-    const box = (await action.boundingBox())!
-    expect(box.x).toBeGreaterThan(boardBox.x + boardBox.width)
-    expect(box.y + box.height).toBeLessThan(navigation.y)
-  }
-  await page.screenshot({ path: 'test-results/chess-tv-960-layout.png' })
+test.describe('Polish TV action layout', () => {
+  test.use({ locale: 'pl-PL' })
+
+  test('TV game keeps actions beside the board above navigation after a move at device density', async ({ page }) => {
+    await page.setViewportSize({ width: 960, height: 540 })
+    await page.goto('/#/play/bot/pip?color=w&tc=none&eval=0')
+    const board = page.locator('[data-chess-board]')
+    await board.focus()
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.tabular button:visible')).toHaveCount(2, { timeout: 20_000 })
+    const boardBox = (await board.boundingBox())!
+    const navigation = (await page.locator('nav:visible').boundingBox())!
+    for (const label of ['Podpowiedź', 'Cofnij', 'Zaproponuj remis', 'Poddaj się']) {
+      const action = page.getByRole('button', { name: label, exact: true })
+      await expect(action).toBeVisible()
+      const box = (await action.boundingBox())!
+      expect(box.x).toBeGreaterThan(boardBox.x + boardBox.width)
+      expect(box.y + box.height).toBeLessThan(navigation.y)
+      const text = (await action.locator('span.truncate').boundingBox())!
+      expect(text.x).toBeGreaterThanOrEqual(box.x)
+      expect(text.x + text.width).toBeLessThanOrEqual(box.x + box.width)
+      expect(text.y + text.height).toBeLessThanOrEqual(box.y + box.height)
+    }
+    await page.screenshot({ path: 'test-results/chess-tv-960-layout.png' })
+  })
 })
